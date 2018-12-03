@@ -7,7 +7,7 @@ var log = new EventLogger('DemoApi');
 var email = "jkh@narola.email";
 
 var sendmail = function (to, subject, text) {
-    sgMail.setApiKey('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');
+    sgMail.setApiKey('yoursendgridapikey');
     const msg = {
         to: to,
         from: 'noreply@demoapi.com',

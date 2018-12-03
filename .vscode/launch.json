@@ -6,7 +6,7 @@
     "configurations": [{
         "type": "node",
         "request": "launch",
-        "name": "Launch Program",
+        "name": "Start web server",
         "program": "${workspaceFolder}/src/server.js"
     }]
 }

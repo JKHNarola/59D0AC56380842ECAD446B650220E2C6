@@ -1,0 +1,15 @@
+{
+    "env": "dev",
+    "port": 2000,
+    "dbconfig": {
+        "user": "dbusername",
+        "password": "dbpassword",
+        "server": "dbserver",
+        "database": "dbname"
+    },
+    "emailconfig": {
+        "from": "noreply@demoapi.com",
+        "sendgridkey": "yoursendgridapikey",
+        "errormailto": "jkh@narola.email"
+    }
+}

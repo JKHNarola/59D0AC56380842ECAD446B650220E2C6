@@ -61,5 +61,5 @@ typings/
 .next
 
 # appconfig and serviceinstall files
-installservice.js
-src/appconfig.js
+/installservice.js
+/src/appconfig.js

@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# appconfig and serviceinstall files
+installservice.js
+src/appconfig.js

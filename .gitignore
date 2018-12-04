@@ -62,4 +62,4 @@ typings/
 
 # appconfig and serviceinstall files
 /installservice.js
-/src/appconfig.js
+/src/appconfig.json

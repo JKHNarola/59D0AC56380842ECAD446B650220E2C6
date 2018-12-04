@@ -98,5 +98,5 @@ svc.on('error', function () {
 //svc.install();
 
 //To uninstall the service, uncomment below line and run this script from node (node installservice.js)
-svc.uninstall();
+//svc.uninstall();
 ```

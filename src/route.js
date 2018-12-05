@@ -1,4 +1,5 @@
 var resHelper = require("./lib/resultHelper");
+var authMiddleware = require('./middlewares/authorizejwttoken');
 
 module.exports = function (app) {
     var catCtrl = require("./controllers/categoryController");
@@ -31,6 +32,7 @@ module.exports = function (app) {
 
     app.route('/api/categories')
         .get(async (req, res, next) => {
+            authMiddleware(req, res, next);
             try {
                 await catCtrl.listAsync(req, res);
             } catch (e) {
@@ -40,6 +42,7 @@ module.exports = function (app) {
 
     app.route('/api/categories/:id')
         .get(async (req, res, next) => {
+            authMiddleware(req, res, next);
             manipulateReq(req);
             try {
                 await catCtrl.getAsync(req, res);

@@ -2,7 +2,7 @@ var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var routes = require('./route');
-var errorhandlingMiddleware = require('./errorhandler');
+var errorhandlingMiddleware = require('./middlewares/errorhandler');
 
 //Set application globals
 global.appconfig = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json'));

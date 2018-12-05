@@ -4,8 +4,14 @@ var bodyParser = require('body-parser');
 var routes = require('./route');
 var errorhandlingMiddleware = require('./middlewares/errorhandler');
 
+var configFile = __dirname + '/appconfig.json';
+if (!fs.existsSync(configFile)) {
+    console.error("Config file not exists!!");
+    return;
+}
+
 //Set application globals
-global.appconfig = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json'));
+global.appconfig = JSON.parse(fs.readFileSync(configFile));
 global.isDev = global.appconfig.env == "dev";
 global.securityKey = "CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale";
 var port = global.appconfig.port;

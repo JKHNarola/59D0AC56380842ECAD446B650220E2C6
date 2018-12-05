@@ -8,7 +8,11 @@ exports.listAsync = async function (req, res) {
 
 exports.getAsync = async function (req, res) {
     var id = req.params.id;
-    if (!id) reshelper.sendOtherResult(res, 400, "Id not found");
+    if (!id) {
+        reshelper.sendOtherResult(res, 400, "Id not found");
+        return;
+    }
+    
     var data = await repo.getAsync(id);
     if (typeof (data) == "undefined")
         reshelper.sendOtherResult(res, 404, "Not found");

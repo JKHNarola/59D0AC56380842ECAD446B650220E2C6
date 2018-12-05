@@ -2,6 +2,7 @@ var resHelper = require("./lib/resultHelper");
 
 module.exports = function (app) {
     var catCtrl = require("./controllers/categoryController");
+    var authCtrl = require("./controllers/authController");
 
     //Routes for pages
     app.route('/')
@@ -17,7 +18,17 @@ module.exports = function (app) {
             throw new Error("Some error occured");
         });
 
+
     //Routes for apis
+    app.route('/api/authenticate')
+        .post(async (req, res, next) => {
+            try {
+                await authCtrl.authenticateAsync(req, res);
+            } catch (e) {
+                next(e);
+            }
+        });
+
     app.route('/api/categories')
         .get(async (req, res, next) => {
             try {

@@ -7,6 +7,7 @@ var errorhandlingMiddleware = require('./errorhandler');
 //Set application globals
 global.appconfig = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json'));
 global.isDev = global.appconfig.env == "dev";
+global.securityKey = "CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale";
 var port = global.appconfig.port;
 
 var app = express();

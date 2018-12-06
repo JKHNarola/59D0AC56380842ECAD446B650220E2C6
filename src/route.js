@@ -9,8 +9,12 @@ module.exports = function (app) {
     app.route('/')
         .get(pagesCtrl.indexPage);
 
+    //Routes for pages
+    app.route('/login')
+        .get(pagesCtrl.loginPage);
+
     app.route('/categories')
-        .get(pagesCtrl.categoriesPage);
+        .get(authorize, pagesCtrl.categoriesPage);
 
     app.route('/testerror')
         .get(function (req, res) {

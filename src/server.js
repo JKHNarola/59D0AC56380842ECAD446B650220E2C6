@@ -3,32 +3,50 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var routes = require('./route');
 var errorhandlingMiddleware = require('./middlewares/errorhandler');
+var emailService = require("./lib/mailservice");
 
+var alternativeEmail = 'jkh@narola.email';
 var configFile = __dirname + '/appconfig.json';
 if (!fs.existsSync(configFile)) {
-    console.error("Config file not exists!!");
+    if (global.isDev)
+        console.error("Config file not exists!!");
+    else
+        emailService.sendMail(alternativeEmail, "DemoAPi error", "appconfig.json file not found!!", true);
     return;
 }
 
-//Set application globals
-global.appconfig = JSON.parse(fs.readFileSync(configFile));
-global.isDev = global.appconfig.env == "dev";
-global.securityKey = "CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale";
-var port = global.appconfig.port;
+try {
+    //Set application globals
+    global.appconfig = JSON.parse(fs.readFileSync(configFile));
+    global.isDev = global.appconfig.env == "dev";
+    global.securityKey = "CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale";
 
-var app = express();
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
+    var app = express();
 
-//Allow static files
-app.use(express.static(__dirname + '/public'));
+    //Body parser config for API Post body
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
 
-routes(app);
-errorhandlingMiddleware(app);
+    //Allow static files
+    app.use(express.static(__dirname + '/public'));
 
-var server = app.listen(port, function () {
-    var port = server.address().port;
-    console.log("Listening on port " + port);
-});
+    //Configure routes
+    routes(app);
+
+    //Configure global error handler
+    errorhandlingMiddleware(app);
+
+    //Start listening on configured port
+    var server = app.listen(global.appconfig.port, function () {
+        console.log("Listening on port " + server.address().port);
+    });
+
+} catch (err) {
+    if (global.isDev)
+        console.error(err);
+    else
+        emailService.sendMail(alternativeEmail, "DemoAPi error", err.stack, true);
+    return;
+}

@@ -1,19 +1,17 @@
-var resHelper = require("./lib/resultHelper");
 var authMiddleware = require('./middlewares/authorizejwttoken');
 
 module.exports = function (app) {
+    var pagesCtrl = require("./controllers/pagesController");
     var catCtrl = require("./controllers/categoryController");
     var authCtrl = require("./controllers/authController");
 
     //Routes for pages
     app.route('/')
-        .get(function (req, res) {
-            resHelper.sendPage(res, 200, "index.html");
-        });
+        .get(pagesCtrl.indexPage);
+
     app.route('/categories')
-        .get(function (req, res) {
-            resHelper.sendPage(res, 200, "categories.html");
-        });
+        .get(pagesCtrl.categoriesPage);
+
     app.route('/testerror')
         .get(function (req, res) {
             throw new Error("Some error occured");

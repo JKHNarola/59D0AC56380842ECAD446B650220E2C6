@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require("path");
 var emailService = require("../lib/mailservice");
 
@@ -34,7 +35,11 @@ exports.sendOtherResult = function (res, statuscode, message, data, status) {
 exports.sendPage = function (res, statuscode, pagename) {
     prepareHeader(res, "html");
     res.statusCode = statuscode;
-    res.sendFile(path.join(__dirname, '..', 'views', pagename));
+    var f = path.join(__dirname, '..', 'views', pagename);
+    if (fs.existsSync(f))
+        res.sendFile(f);
+    else
+        this.sendOtherResult(res, 500, "View file " + pagename + " not exists.");
 }
 
 exports.sendError = function (req, res, error) {

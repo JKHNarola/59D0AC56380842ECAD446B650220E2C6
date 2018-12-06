@@ -1,3 +1,4 @@
+var reqHelper = require("../lib/reqHelper");
 const reshelper = require('../lib/resultHelper');
 const repo = require("../repos/categoryRepo");
 
@@ -12,7 +13,7 @@ exports.listAsync = async function (req, res, next) {
 
 exports.getAsync = async function (req, res, next) {
     try {
-        req.orgParams = req.params;
+        reqHelper.copyParam();
 
         var id = req.params.id;
         if (!id) {

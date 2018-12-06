@@ -1,4 +1,4 @@
-var authMiddleware = require('./middlewares/authorizejwttoken');
+var authorize = require('./middlewares/authorizejwttoken');
 
 module.exports = function (app) {
     var pagesCtrl = require("./controllers/pagesController");
@@ -26,8 +26,8 @@ module.exports = function (app) {
         .get(authCtrl.logout);
 
     app.route('/api/categories')
-        .get(authMiddleware, catCtrl.listAsync);
+        .get(authorize, catCtrl.listAsync);
 
     app.route('/api/categories/:id')
-        .get(authMiddleware, catCtrl.getAsync);
+        .get(authorize, catCtrl.getAsync);
 };

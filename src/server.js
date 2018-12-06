@@ -45,7 +45,7 @@ try {
 
 } catch (err) {
     if (global.isDev)
-        console.error(err);
+        console.error(err.stack);
     else
         emailService.sendMail(alternativeEmail, "DemoAPi error", err.stack, true);
     return;

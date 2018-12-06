@@ -1,10 +1,10 @@
 var resHelper = require('../lib/resultHelper');
 var jwt = require('jsonwebtoken');
 var loginmanager = require('../lib/loginmanager');
-var tokHelper = require("../lib/tokenhelper");
+var reqHelper = require("../lib/reqHelper");
 
 module.exports = function (req, res, next) {
-    var token = tokHelper.extractToken(req);
+    var token = reqHelper.extractToken(req);
 
     // decode token
     if (token) {

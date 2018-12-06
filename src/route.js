@@ -22,34 +22,14 @@ module.exports = function (app) {
 
     //Routes for apis
     app.route('/api/authenticate')
-        .post(async (req, res, next) => {
-            try {
-                await authCtrl.authenticateAsync(req, res);
-            } catch (e) {
-                next(e);
-            }
-        });
+        .post(authCtrl.authenticateAsync);
+
+    app.route('/api/logout')
+        .get(authCtrl.logout);
 
     app.route('/api/categories')
-        .get(authMiddleware, async (req, res, next) => {
-            try {
-                await catCtrl.listAsync(req, res);
-            } catch (e) {
-                next(e);
-            }
-        });
+        .get(authMiddleware, catCtrl.listAsync);
 
     app.route('/api/categories/:id')
-        .get(authMiddleware, async (req, res, next) => {
-            manipulateReq(req);
-            try {
-                await catCtrl.getAsync(req, res);
-            } catch (e) {
-                next(e);
-            }
-        });
-
-    var manipulateReq = function (req) {
-        req.orgParams = req.params;
-    }
+        .get(authMiddleware, catCtrl.getAsync);
 };

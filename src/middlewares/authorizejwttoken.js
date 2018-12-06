@@ -1,12 +1,10 @@
 var resHelper = require('../lib/resultHelper');
 var jwt = require('jsonwebtoken');
+var loginmanager = require('../lib/loginmanager');
+var tokHelper = require("../lib/tokenhelper");
 
 module.exports = function (req, res, next) {
-    var token = req.body.token || req.query.token;
-    if (!token) {
-        var authheader = req.headers['authorization'];
-        token = authheader ? authheader.replace('Bearer ', "") : null;
-    }
+    var token = tokHelper.extractToken(req);
 
     // decode token
     if (token) {
@@ -16,16 +14,17 @@ module.exports = function (req, res, next) {
         try {
             decoded = jwt.verify(token, global.securityKey);
         } catch (ex) {}
-        if (!decoded) {
-            resHelper.sendOtherResult(res, 403, "Invalid or expired token");
+
+        if (!decoded || loginmanager.isUserLoggedOut(decoded.user.UserId)) {
+            resHelper.sendOtherResult(res, 403, "You are not authorized to access. Invalid or expired token.");
             return;
         } else {
-            // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             next();
         }
+
     } else {
-        resHelper.sendOtherResult(res, 403, "No token found");
+        resHelper.sendOtherResult(res, 403, "You are not authorized to access. No token found.");
         return;
     }
 }

@@ -12,7 +12,6 @@ exports.authenticateAsync = async function (username, password) {
 
     if (result.recordsets[0].length == 1 && result.recordsets[0][0].Password == password) {
         delete result.recordsets[0][0]["Password"];
-        delete result.recordsets[0][0]["UserId"];
         delete result.recordsets[0][0]["IsEmailConfirmed"];
         return result.recordsets[0][0];
     } else

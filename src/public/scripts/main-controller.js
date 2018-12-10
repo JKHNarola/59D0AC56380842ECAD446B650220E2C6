@@ -1,4 +1,4 @@
-app.controller('mainCtrl', ['$scope', 'appConsts', 'apiService', function ($scope, appConsts, apiService) {
+app.controller('mainCtrl', function ($scope, appConsts, apiService) {
     $scope.c = appConsts;
 
     var onGet = function () {
@@ -12,4 +12,4 @@ app.controller('mainCtrl', ['$scope', 'appConsts', 'apiService', function ($scop
     }
 
     onGet();
-}]);
+});

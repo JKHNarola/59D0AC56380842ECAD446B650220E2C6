@@ -262,5 +262,3 @@ app.service('apiService', ['$http', '$q', 'appConsts', function ($http, $q, appC
     return apiService;
 
 }]);
-
-console.log(app);

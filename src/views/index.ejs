@@ -5,17 +5,19 @@
 <body>
     <div class="container" ng-cloak ng-app="app" ng-controller="mainCtrl">
         <% include ./partials/nav %>
-        <section name="jumbotron">
-            <div class="jumbotron text-center">
-                <h1>App Presents</h1>
-                <p>Using EJS templating with Node.js</p>
-                <div>{{d}}</div>
-            </div>
-        </section>
-        <% include ./partials/footer %>
+        <div class="page-area">
+            <section name="jumbotron">
+                <div class="jumbotron text-center">
+                    <h1>App Presents</h1>
+                    <p>Using EJS templating with Node.js</p>
+                </div>
+            </section>
+            <% include ./partials/footer %>
+        </div>
     </div>
 
     <% include ./partials/scripts %>
     <script src="/scripts/main-controller.js"></script>
 </body>
+
 </html>

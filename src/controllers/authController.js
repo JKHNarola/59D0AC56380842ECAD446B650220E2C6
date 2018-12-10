@@ -51,14 +51,14 @@ exports.logout = function (req, res, next) {
             } catch (ex) {}
 
             if (!decoded) {
-                reshelper.sendOtherResult(res, 403, "You are not authorized to access. Invalid access token.");
+                reshelper.sendOtherResult(res, 401, "You are not authorized to access. Invalid access token.");
             } else {
                 loginmanager.removelogin(decoded.user.UserId);
                 reshelper.sendOkResult(res, "You are successfully logged out.");
             }
 
         } else {
-            reshelper.sendOtherResult(res, 403, "You are not authorized to access. No access token found.");
+            reshelper.sendOtherResult(res, 401, "You are not authorized to access. No access token found.");
         }
     } catch (e) {
         next(e);

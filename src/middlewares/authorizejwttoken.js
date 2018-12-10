@@ -16,7 +16,7 @@ module.exports = function (req, res, next) {
         } catch (ex) {}
 
         if (!decoded || loginmanager.isUserLoggedOut(decoded.user.userId)) {
-            resHelper.sendOtherResult(res, 403, "You are not authorized to access. Access token is invalid or expired.");
+            resHelper.sendOtherResult(res, 401, "You are not authorized to access. Access token is invalid or expired.");
             return;
         } else {
             req.decoded = decoded;
@@ -24,7 +24,7 @@ module.exports = function (req, res, next) {
         }
 
     } else {
-        resHelper.sendOtherResult(res, 403, "You are not authorized to access. No access token found.");
+        resHelper.sendOtherResult(res, 401, "You are not authorized to access. No access token found.");
         return;
     }
 }

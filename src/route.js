@@ -10,9 +10,6 @@ module.exports = function (app) {
     app.route('/')
         .get(pagesCtrl.indexPage);
 
-    app.route('/categories')
-        .get(authorize, pagesCtrl.categoriesPage);
-
     app.route('/testerror')
         .get(function (req, res) {
             throw new Error("Some error occured");

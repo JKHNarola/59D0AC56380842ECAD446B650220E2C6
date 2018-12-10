@@ -1,5 +1,4 @@
 var authorize = require('./middlewares/authorizejwttoken');
-var cors = require('cors');
 
 module.exports = function (app) {
     var pagesCtrl = require("./controllers/pagesController");

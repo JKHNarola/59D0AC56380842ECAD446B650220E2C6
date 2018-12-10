@@ -6,23 +6,21 @@ var routes = require('./route');
 var errorhandlingMiddleware = require('./middlewares/errorhandler');
 var emailService = require("./lib/mailservice");
 
-var configFile = __dirname + '/appconfig.json';
 try {
     //Set application globals
+    var configFile = __dirname + '/appconfig.json';
     if (fs.existsSync(configFile))
         global.appconfig = JSON.parse(fs.readFileSync(configFile));
 
-    if (!global.appconfig) {
-        global.appconfig = {
-            env: process.env.env ? process.env.env.toString() : "prod",
-            port: process.env.PORT || 3500,
-            dbconfig: JSON.parse(process.env.dbconfig.toString()),
-            emailconfig: JSON.parse(process.env.emailconfig.toString()),
-            tokentimespan: process.env.tokentimespan ? process.env.tokentimespan.toString() : "1h"
-        };
-    }
+    if (!global.appconfig) global.appconfig = {};
+    if (!global.appconfig.env) global.appconfig.env = process.env.env ? process.env.env.toString() : "prod";
+    if (!global.appconfig.port) global.appconfig.port = process.env.PORT || 3500;
+    if (!global.appconfig.dbconfig) global.appconfig.dbconfig = process.env.dbconfig? JSON.parse(process.env.dbconfig.toString()) : null;
+    if (!global.appconfig.emailconfig) global.appconfig.emailconfig = process.env.emailconfig? JSON.parse(process.env.emailconfig.toString()) : null;
+    if (!global.appconfig.tokentimespan) global.appconfig.tokentimespan = process.env.tokentimespan ? process.env.tokentimespan.toString() : "1h";
+    global.securityKey = process.env.securitykey || null;
+
     global.isDev = global.appconfig.env === "dev";
-    global.securityKey = process.env.securitykey;
 
     if (!global.appconfig.env ||
         !global.appconfig.port ||
@@ -30,7 +28,7 @@ try {
         !global.appconfig.emailconfig ||
         !global.appconfig.tokentimespan ||
         !global.securityKey) {
-        throw new Error("Missing required application config!!");
+        throw new Error("Missing required application configurations!!");
     }
 
     var app = express();
@@ -56,7 +54,7 @@ try {
 
     //Start listening on configured port
     var server = app.listen(global.appconfig.port, function () {
-        console.log("Server is listening on port " + server.address().port + "...");
+        console.info("Server is listening on port " + server.address().port + "...");
     });
 
 } catch (err) {

@@ -16,13 +16,13 @@ exports.authenticateAsync = async function (req, res, next) {
         var u = await repo.authenticateAsync(u, p);
         if (u != null) {
             var payload = {
-                user: u //TODO: prepare user object with email, name etc.
+                user: u
             };
             var token = jwt.sign(payload, global.securityKey, {
-                expiresIn: global.appconfig.tokenexpiresin
+                expiresIn: global.appconfig.tokentimespan
             });
 
-            loginmanager.addlogin(u.UserId, token);
+            loginmanager.addlogin(u.userId, token);
 
             var d = {
                 token: token
@@ -51,14 +51,14 @@ exports.logout = function (req, res, next) {
             } catch (ex) {}
 
             if (!decoded) {
-                reshelper.sendOtherResult(res, 403, "You are not authorized to access. Invalid token.");
+                reshelper.sendOtherResult(res, 403, "You are not authorized to access. Invalid access token.");
             } else {
                 loginmanager.removelogin(decoded.user.UserId);
                 reshelper.sendOkResult(res, "You are successfully logged out.");
             }
 
         } else {
-            reshelper.sendOtherResult(res, 403, "You are not authorized to access. No token found.");
+            reshelper.sendOtherResult(res, 403, "You are not authorized to access. No access token found.");
         }
     } catch (e) {
         next(e);

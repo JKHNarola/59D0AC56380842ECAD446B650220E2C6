@@ -35,7 +35,7 @@ exports.sendOtherResult = function (res, statuscode, message, data, status) {
 exports.sendPage = function (res, statuscode, pagename) {
     prepareHeader(res, "html");
     res.statusCode = statuscode;
-    var f = path.join(__dirname, '..', 'views', pagename);
+    var f = path.join(__dirname, '..', 'views', "staticpages", pagename);
     if (fs.existsSync(f))
         res.sendFile(f);
     else

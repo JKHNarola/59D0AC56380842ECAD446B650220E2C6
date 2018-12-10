@@ -1,3 +1,4 @@
+var camelCase = require("camelcase-keys");
 var sql = require("mssql");
 var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
 
@@ -7,7 +8,7 @@ exports.listAsync = async function () {
     var result = await pool.query("SELECT CategoryID, CategoryName, Description FROM CATEGORIES");
     if (pool.connected)
         await pool.close();
-    return result.recordsets[0];
+    return camelCase(result.recordsets[0]);
 };
 
 exports.getAsync = async function (id) {
@@ -20,7 +21,7 @@ exports.getAsync = async function (id) {
         await pool.close();
 
     if (result.recordsets[0][0])
-        return result.recordsets[0][0];
+        return camelCase(result.recordsets[0][0]);
     else
         return;
 };

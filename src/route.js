@@ -10,10 +10,6 @@ module.exports = function (app) {
     app.route('/')
         .get(pagesCtrl.indexPage);
 
-    //Routes for pages
-    app.route('/login')
-        .get(pagesCtrl.loginPage);
-
     app.route('/categories')
         .get(authorize, pagesCtrl.categoriesPage);
 

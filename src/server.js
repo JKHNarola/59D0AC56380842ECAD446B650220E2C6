@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require("path");
 var express = require('express');
 var bodyParser = require('body-parser');
 var routes = require('./route');
@@ -8,10 +9,7 @@ var emailService = require("./lib/mailservice");
 var alternativeEmail = 'jkh@narola.email';
 var configFile = __dirname + '/appconfig.json';
 if (!fs.existsSync(configFile)) {
-    if (global.isDev)
-        console.error("Config file not exists!!");
-    else
-        emailService.sendMail(alternativeEmail, "DemoAPi error", "appconfig.json file not found!!", true);
+    console.error("appconfig.json file not exists!!");
     return;
 }
 
@@ -29,6 +27,10 @@ try {
     }));
     app.use(bodyParser.json());
 
+    //Viewengine setup
+    app.set('views', path.join(__dirname, '/views'));
+    app.set("view engine", "ejs");
+
     //Allow static files
     app.use(express.static(__dirname + '/public'));
 
@@ -40,7 +42,7 @@ try {
 
     //Start listening on configured port
     var server = app.listen(global.appconfig.port, function () {
-        console.log("Listening on port " + server.address().port);
+        console.log("Server is listening on port " + server.address().port + "...");
     });
 
 } catch (err) {

@@ -1,3 +1,4 @@
+var camelcase = require("camelcase-keys");
 var sql = require("mssql");
 var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
 
@@ -10,10 +11,11 @@ exports.authenticateAsync = async function (username, password) {
     if (pool.connected)
         await pool.close();
 
-    if (result.recordsets[0].length == 1 && result.recordsets[0][0].Password == password) {
-        delete result.recordsets[0][0]["Password"];
-        delete result.recordsets[0][0]["IsEmailConfirmed"];
-        return result.recordsets[0][0];
+    var res = camelcase(result.recordsets[0]);
+    if (res.length == 1 && res[0].password == password) {
+        delete res[0]["password"];
+        delete res[0]["isEmailConfirmed"];
+        return res[0];
     } else
         return null;
 };

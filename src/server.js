@@ -16,7 +16,7 @@ if (!fs.existsSync(configFile)) {
 try {
     //Set application globals
     global.appconfig = JSON.parse(fs.readFileSync(configFile));
-    global.isDev = global.appconfig.env == "dev";
+    global.isDev = global.appconfig.env === "dev";
     global.securityKey = "CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale";
 
     var app = express();
@@ -41,7 +41,7 @@ try {
     errorhandlingMiddleware(app);
 
     //Start listening on configured port
-    var server = app.listen(global.appconfig.port, function () {
+    var server = app.listen(process.env.PORT || global.appconfig.port || 3500, function () {
         console.log("Server is listening on port " + server.address().port + "...");
     });
 

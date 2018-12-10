@@ -24,7 +24,7 @@ exports.sendErrorMail = function (error, req) {
         to: global.appconfig.emailconfig.errormailto,
         from: global.appconfig.emailconfig.from,
         subject: "DemoApi error",
-        html: prepareBody(error, req)
+        html: prepareErrorBody(error, req, true)
     };
 
 
@@ -40,13 +40,15 @@ exports.generateErrorBody = function (error, req) {
 };
 
 //TODO code cleanup
-var prepareErrorBody = function (error, req) {
+var prepareErrorBody = function (error, req, isForEmail) {
     var str = "";
     var errorTemplateFile = path.join(__dirname, "..", "views", "staticpages", "errortemplate.html");
     if (fs.existsSync(errorTemplateFile))
         str = fs.readFileSync(errorTemplateFile).toString();
 
     if (str !== "") {
+        str = str.replace("[boxmaxwidth]", isForEmail ? "600" : "1200");
+
         str = str.replace("[errmsg]", error.message ? error.message : "");
         str = str.replace("[errstack]", error.stack ? error.stack : "");
         str = str.replace("[reqmethod]", req && req.method ? req.method.toUpperCase() : "");
@@ -81,13 +83,13 @@ var prepareErrorBody = function (error, req) {
         if (hostname && hostname.length > 1000) {
             hostname = hostname.substring(0, 999) + "...";
         }
-        str = str.replace("[reqhostname]", hostname);        
+        str = str.replace("[reqhostname]", hostname);
 
         var ip = req && req.ip ? req.ip : "";
         if (ip && ip.length > 1000) {
             ip = ip.substring(0, 999) + "...";
         }
-        str = str.replace("[reqip]", ip);   
+        str = str.replace("[reqip]", ip);
 
         return str;
     }

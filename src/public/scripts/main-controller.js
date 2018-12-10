@@ -7,9 +7,9 @@ app.controller('mainCtrl', function ($scope, appConsts, apiService) {
                 console.log(r);
             })
             .catch(function (e) {
-                console.log(e);
+                console.log(e.data);
             });
-    }
+    };
 
     onGet();
 });

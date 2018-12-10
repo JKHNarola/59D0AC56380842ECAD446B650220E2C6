@@ -12,7 +12,7 @@ exports.authenticateAsync = async function (username, password) {
         await pool.close();
 
     var res = camelcase(result.recordsets[0]);
-    if (res.length == 1 && res[0].password == password) {
+    if (res.length === 1 && res[0].password === password) {
         delete res[0]["password"];
         delete res[0]["isEmailConfirmed"];
         return res[0];

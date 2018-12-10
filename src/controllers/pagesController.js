@@ -7,4 +7,4 @@ exports.indexPage = function (req, res, next) {
     } catch (e) {
         next(e);
     }
-}
+};

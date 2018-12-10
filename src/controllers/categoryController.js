@@ -22,7 +22,7 @@ exports.getAsync = async function (req, res, next) {
         }
 
         var data = await repo.getAsync(id);
-        if (typeof (data) == "undefined")
+        if (typeof data === "undefined")
             reshelper.sendOtherResult(res, 404, "Not found");
         else
             reshelper.sendOkResult(res, "", data, 1);

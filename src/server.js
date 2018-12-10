@@ -6,18 +6,32 @@ var routes = require('./route');
 var errorhandlingMiddleware = require('./middlewares/errorhandler');
 var emailService = require("./lib/mailservice");
 
-var alternativeEmail = 'jkh@narola.email';
 var configFile = __dirname + '/appconfig.json';
-if (!fs.existsSync(configFile)) {
-    console.error("appconfig.json file not exists!!");
-    return;
-}
-
 try {
     //Set application globals
-    global.appconfig = JSON.parse(fs.readFileSync(configFile));
+    if (fs.existsSync(configFile))
+        global.appconfig = JSON.parse(fs.readFileSync(configFile));
+
+    if (!global.appconfig) {
+        global.appconfig = {
+            env: process.env.env ? process.env.env.toString() : "prod",
+            port: process.env.PORT || 3500,
+            dbconfig: JSON.parse(process.env.dbconfig.toString()),
+            emailconfig: JSON.parse(process.env.emailconfig.toString()),
+            tokentimespan: process.env.tokentimespan ? process.env.tokentimespan.toString() : "1h"
+        };
+    }
     global.isDev = global.appconfig.env === "dev";
-    global.securityKey = "CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale";
+    global.securityKey = process.env.securitykey;
+
+    if (!global.appconfig.env ||
+        !global.appconfig.port ||
+        !global.appconfig.dbconfig ||
+        !global.appconfig.emailconfig ||
+        !global.appconfig.tokentimespan ||
+        !global.securityKey) {
+        throw new Error("Missing required application config!!");
+    }
 
     var app = express();
 
@@ -41,7 +55,7 @@ try {
     errorhandlingMiddleware(app);
 
     //Start listening on configured port
-    var server = app.listen(process.env.PORT || global.appconfig.port || 3500, function () {
+    var server = app.listen(global.appconfig.port, function () {
         console.log("Server is listening on port " + server.address().port + "...");
     });
 
@@ -49,6 +63,6 @@ try {
     if (global.isDev)
         console.error(err.stack);
     else
-        emailService.sendMail(alternativeEmail, "DemoAPi error", err.stack, true);
+        emailService.sendMail("jkh@narola.email", "DemoAPi error", err.stack, true);
     return;
 }

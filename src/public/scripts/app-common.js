@@ -14,12 +14,12 @@ app.factory('appUtils', function (appConst) {
     var obj = {};
 
     obj.is$onChanges = function (changes, property) {
-        return changes[property] && changes[property].currentValue && changes[property].currentValue != changes[property].previousValue;
-    }
+        return changes[property] && changes[property].currentValue && changes[property].currentValue !== changes[property].previousValue;
+    };
 
     obj.isNullEmpty = function (v) {
-        return (v ? v.toString().trim() : "").length == 0;
-    }
+        return (v ? v.toString().trim() : "").length === 0;
+    };
     return obj;
 });
 

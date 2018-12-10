@@ -4,14 +4,14 @@ exports.sendMail = function (to, subject, body, isText) {
     var msg = {
         to: to,
         from: global.appconfig.emailconfig.from,
-        subject: subject,
+        subject: subject
     };
     if (isText) msg.text = body;
     else msg.html = body;
     try {
         sgMail.send(msg);
     } catch (ex) {
-
+        //No need to handle error
     }
 };
 
@@ -28,13 +28,13 @@ exports.sendErrorMail = function (error, req) {
     try {
         sgMail.send(msg);
     } catch (ex) {
-
+        //No need to handle error
     }
 };
 
 exports.generateErrorBody = function (error, req) {
     return prepareErrorBody(error, req);
-}
+};
 
 var prepareErrorBody = function (error, req) {
     var err = error.stack ? error.stack : error;
@@ -54,7 +54,7 @@ var prepareErrorBody = function (error, req) {
             }
             str += "<div><b>Params :</b> " + x + "</div>";
         } else if (req.params) {
-            var x = JSON.stringify(req.params);
+            x = JSON.stringify(req.params);
             if (x && x.length > 1000) {
                 x = x.substring(0, 999) + "...";
             }
@@ -62,14 +62,14 @@ var prepareErrorBody = function (error, req) {
         }
 
         if (req.query) {
-            var x = JSON.stringify(req.query);
+            x = JSON.stringify(req.query);
             if (x && x.length > 1000) {
                 x = x.substring(0, 999) + "...";
             }
             str += "<div><b>Query :</b> " + x + "</div>";
         }
         if (req.headers) {
-            var x = JSON.stringify(req.headers);
+            x = JSON.stringify(req.headers);
             if (x && x.length > 1000) {
                 x = x.substring(0, 999) + "...";
             }
@@ -80,4 +80,4 @@ var prepareErrorBody = function (error, req) {
     }
 
     return str + "</body></html>";
-}
+};

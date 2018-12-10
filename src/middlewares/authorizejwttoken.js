@@ -13,7 +13,9 @@ module.exports = function (req, res, next) {
         var decoded = "";
         try {
             decoded = jwt.verify(token, global.securityKey);
-        } catch (ex) {}
+        } catch (ex) {
+            //No need to handle error
+        }
 
         if (!decoded || loginmanager.isUserLoggedOut(decoded.user.userId)) {
             resHelper.sendOtherResult(res, 401, "You are not authorized to access. Access token is invalid or expired.");
@@ -27,4 +29,4 @@ module.exports = function (req, res, next) {
         resHelper.sendOtherResult(res, 401, "You are not authorized to access. No access token found.");
         return;
     }
-}
+};

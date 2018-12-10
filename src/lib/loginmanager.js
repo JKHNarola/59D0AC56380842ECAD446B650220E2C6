@@ -1,12 +1,12 @@
 exports.addlogin = function (userid, token) {
     if (!global.logins) global.logins = [];
     var filtered = global.logins.filter(function (x) {
-        return x.id == userid;
+        return x.id === userid;
     });
 
-    if (filtered && filtered.length == 1) {
+    if (filtered && filtered.length === 1) {
         filtered[0].token = token;
-        filtered[0].time = new Date()
+        filtered[0].time = new Date();
     } else {
         global.logins.push({
             id: userid,
@@ -23,10 +23,10 @@ exports.removelogin = function (userid) {
     }
 
     var filtered = global.logins.filter(function (x) {
-        return x.id == userid;
+        return x.id === userid;
     });
 
-    if (filtered && filtered.length == 1) {
+    if (filtered && filtered.length === 1) {
         var i = global.logins.indexOf(filtered[0]);
         if (i > -1) global.logins.splice(i, 1);
     }
@@ -39,8 +39,8 @@ exports.isUserLoggedOut = function (userid) {
     }
 
     var filtered = global.logins.filter(function (x) {
-        return x.id == userid;
+        return x.id === userid;
     });
 
-    return !(filtered && filtered.length == 1);
+    return !(filtered && filtered.length === 1);
 };

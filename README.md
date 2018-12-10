@@ -15,7 +15,8 @@
         "from": "noreply@demoapi.com",
         "sendgridkey": "yoursendgridapikey",
         "errormailto": "emailaddress"
-    }
+    },
+    "tokentimespan": "1h"
 }
 ```
 

@@ -62,8 +62,9 @@ typings/
 
 # appconfig and serviceinstall files
 /installservice.js
-/src/appconfig.json
+NodeExpressJsApp/src/appconfig.json
 
-.editorconfig
-bin/
-obj/
+NodeExpressJsApp/.editorconfig
+
+NodeExpressJsApp/bin/
+NodeExpressJsApp/obj/

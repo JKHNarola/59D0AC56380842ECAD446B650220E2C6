@@ -34,7 +34,6 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="installservice.js" />
     <Compile Include="src\controllers\authController.js" />
     <Compile Include="src\controllers\categoryController.js" />
     <Compile Include="src\controllers\pagesController.js" />
@@ -50,7 +49,6 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Compile Include="src\repos\categoryRepo.js" />
     <Compile Include="src\route.js" />
     <Compile Include="src\server.js" />
-    <Content Include=".gitignore" />
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />

@@ -22,11 +22,9 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-ejs-layouts": "^2.5.0",
-    "express-session": "^1.15.6",
     "jsonwebtoken": "^8.4.0",
     "mssql": "^4.3.0",
     "node-windows": "^0.1.14",
-    "sendmail": "^1.4.1",
-    "sqlite3": "^4.0.4"
+    "sendmail": "^1.4.1"
   }
 }

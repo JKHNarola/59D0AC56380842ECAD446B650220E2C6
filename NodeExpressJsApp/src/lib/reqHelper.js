@@ -11,4 +11,4 @@ exports.extractToken = function (req) {
 //Hack
 exports.copyParam = function (req) {
     req.orgParams = req.params;
-}
+};

@@ -8,7 +8,7 @@ app.factory("appConsts", function (appResources) {
     return appResources();
 });
 
-app.factory('appUtils', function (appConst) {
+app.factory('appUtils', function () {
     var obj = {};
 
     obj.is$onChanges = function (changes, property) {
@@ -51,9 +51,6 @@ app.directive('capitalizeFirst', function ($parse) {
                 if (inputValue) {
                     var capitalized = inputValue.charAt(0).toUpperCase() + inputValue.substring(1);
 
-                    //Capitalize all words (after space)
-                    //var capitalized = inputValue.replace(/^(.)|\s(.)/g, function(v) { return v.toUpperCase(); });
-
                     if (capitalized !== inputValue) {
                         ngModel.$setViewValue(capitalized);
                         ngModel.$render();
@@ -62,8 +59,6 @@ app.directive('capitalizeFirst', function ($parse) {
                 }
             };
 
-            //Push process function to model
-            //Apply it right now
             var model = $parse(attr.ngModel);
             ngModel.$parsers.push(capitalize);
             capitalize(model(scope));
@@ -109,7 +104,7 @@ app.directive('restrictInput', function () {
             var regex = RegExp(attrs.restrictInput);
             var value = ele.value;
             ele.addEventListener('keyup', function (e) {
-                if (regex.test(ele.value) || ele.value == '') value = ele.value;
+                if (regex.test(ele.value) || ele.value === '') value = ele.value;
                 else ele.value = value;
             });
         }
@@ -130,24 +125,6 @@ app.directive('convertToNumber', function () {
     };
 });
 
-app.directive('compareTo', function () {
-    return {
-        require: 'ngModel',
-        scope: {
-            otherModelValue: "=compareTo"
-        },
-        link: function (scope, element, attrs, ngModel) {
-            ngModel.$validators.compareTo = function (modelValue) {
-                return modelValue == scope.otherModelValue;
-            };
-
-            scope.$watch("otherModelValue", function () {
-                ngModel.$validate();
-            });
-        }
-    };
-});
-
 app.filter('propsFilter', function () {
     return function (items, props) {
         var out = [];
@@ -160,14 +137,15 @@ app.filter('propsFilter', function () {
                 for (var i = 0; i < keys.length; i++) {
                     var prop = keys[i];
                     var text = props[prop];
-                    switch (typeof (item[prop])) {
+                    switch (typeof item[prop]) {
                         case 'string':
                             if (item[prop].toString().toLowerCase().indexOf(text.toLowerCase()) !== -1) itemMatches = true;
                             break;
                         case 'number':
-                            if (item[prop] == text) itemMatches = true;
+                            if (item[prop] === text) itemMatches = true;
+                            break;
                         default:
-                            if (item[prop] == text) itemMatches = true;
+                            if (item[prop] === text) itemMatches = true;
                             break;
                     }
                     if (itemMatches) break;

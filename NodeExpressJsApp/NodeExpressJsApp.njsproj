@@ -51,7 +51,6 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Compile Include="src\server.js" />
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
-    <Content Include="README.md" />
     <Content Include="src\appconfig.json" />
     <Content Include="src\public\favicon.ico" />
     <Content Include="src\public\images\tmpimg.jpg" />
@@ -60,6 +59,9 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Content Include="src\views\index.ejs" />
     <Content Include="src\views\partials\footer.ejs" />
     <Content Include="src\views\partials\head.ejs" />
+    <Content Include="src\public\uitemplates\loginmodal.tmpl.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\views\partials\nav.ejs" />
     <Content Include="src\views\partials\scripts.ejs" />
     <Content Include="src\views\staticpages\404.html" />
@@ -75,6 +77,7 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Folder Include="src\middlewares\" />
     <Folder Include="src\public\" />
     <Folder Include="src\public\images\" />
+    <Folder Include="src\public\uitemplates\" />
     <Folder Include="src\public\scripts\" />
     <Folder Include="src\public\styles\" />
     <Folder Include="src\repos\" />

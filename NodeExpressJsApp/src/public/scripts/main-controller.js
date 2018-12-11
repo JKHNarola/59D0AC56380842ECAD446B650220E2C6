@@ -1,15 +1,15 @@
-app.controller('mainCtrl', function ($scope, appConsts, apiService) {
-    $scope.c = appConsts;
+app.controller('mainCtrl', function ($scope, apiService, login) {
+    $scope.openLogin = function () {
+        login.open();
+    };
 
-    var onGet = function () {
+    $scope.onGet = function () {
         apiService.get("/api/categories").promise
             .then(function (r) {
                 console.log(r);
             })
             .catch(function (e) {
-                console.log(e.data);
+                console.log(e);
             });
     };
-
-    onGet();
 });

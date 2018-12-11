@@ -3,19 +3,20 @@
 <% include ./partials/head %>
 
 <body>
-    <div class="container" ng-cloak ng-app="app" ng-controller="mainCtrl">
-        <% include ./partials/nav %>
-        <div class="page-area">
-            <section name="jumbotron">
-                <div class="jumbotron text-center">
-                    <h1>App is being served with node.js</h1>
-                    <p>Using EJS templating</p>
-                </div>
-            </section>
-            <% include ./partials/footer %>
+    <div ng-cloak ng-app="app" ng-controller="mainCtrl">
+        <div class="container">
+            <% include ./partials/nav %>
+            <div class="page-area">
+                <section name="jumbotron" ng-click="openLogin()">
+                    <div class="jumbotron text-center">
+                        <h1>App is being served with node.js</h1>
+                        <p>Using EJS templating</p>
+                    </div>
+                </section>
+                <% include ./partials/footer %>
+            </div>
         </div>
     </div>
-
     <% include ./partials/scripts %>
     <script src="/scripts/main-controller.js"></script>
 </body>

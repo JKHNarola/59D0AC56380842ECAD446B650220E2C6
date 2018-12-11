@@ -1,0 +1,39 @@
+<div class="modal-body p-2">
+    <div class="row">
+        <div class="col-md-12 mx-auto">
+            <div class="shadow-sm card border-secondary">
+                <div class="card-header">
+                    <h3 class="mb-0 my-2 float-left">{{isUnauthorized?'Login Again':'Login'}}</h3>
+                    <span class="close my-2" ng-click="closePopup()"><i class="fa fa-times-circle"></i></span>
+                </div>
+                <div class="card-body">
+                    <form class="form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="inputUsername">Username</label>
+                            <input type="text" ng-model="loginmodel.username" id="inputUsername" placeholder="Username" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPasswd">Password</label>
+                            <div class="input-group">
+                                <input type="{{pwdInputType}}" ng-model="loginmodel.password" class="form-control" placeholder="Password">
+                                <div class="input-group-append">
+                                    <button type="button" ng-click="hideShowPassword()"
+                                            class="btn btn-default">
+                                        <i ng-if="pwdInputType=='text'" class="fa fa-eye-slash" aria-hidden="true"></i>
+                                        <i ng-if="pwdInputType=='password'" class="fa fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button ng-disabled="isLoggingIn" ng-click="onLogin()" type="button" class="btn btn-primary float-right">
+                                <span ng-if="isLoggingIn"><i class="fa fa-spinner fa-spin"></i>&nbsp;</span>LOGIN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <p class="m-2 text-center">Forgot your password? <a href="#">Click here</a></p>
+            </div>
+        </div>
+    </div>
+</div>

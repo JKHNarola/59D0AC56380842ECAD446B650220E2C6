@@ -54,26 +54,26 @@ var prepareErrorBody = function (error, req, isForEmail) {
         str = str.replace("[reqmethod]", req && req.method ? req.method.toUpperCase() : "");
         str = str.replace("[reqpath]", req && req.originalUrl ? req.originalUrl : "");
 
-        var body = req && req.body ? JSON.stringify(req.body) : "";
+        var body = req && req.body ? JSON.stringify(req.body, null, 4) : "";
         if (body && body.length > 1000) {
             body = body.substring(0, 999) + "...";
         }
         str = str.replace("[reqbody]", body);
 
-        var query = req && req.query ? JSON.stringify(req.query) : "";
+        var query = req && req.query ? JSON.stringify(req.query, null, 4) : "";
         if (query && query.length > 1000) {
             query = query.substring(0, 999) + "...";
         }
         str = str.replace("[reqquery]", query);
 
-        var params = req && req.orgParams ? JSON.stringify(req.orgParams) : "";
-        if (params === "") params = req && req.params ? JSON.stringify(req.params) : "";
+        var params = req && req.orgParams ? JSON.stringify(req.orgParams, null, 4) : "";
+        if (params === "") params = req && req.params ? JSON.stringify(req.params, null, 4) : "";
         if (params && params.length > 1000) {
             params = params.substring(0, 999) + "...";
         }
         str = str.replace("[reqparam]", params);
 
-        var headers = req && req.headers ? JSON.stringify(req.headers) : "";
+        var headers = req && req.headers ? JSON.stringify(req.headers, null, 4) : "";
         if (headers && headers.length > 1000) {
             headers = headers.substring(0, 999) + "...";
         }

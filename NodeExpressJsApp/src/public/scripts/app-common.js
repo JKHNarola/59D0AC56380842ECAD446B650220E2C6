@@ -1,6 +1,4 @@
-var token = "";
-
-var app = angular.module('app', []);
+var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 app.constant('appResources', function () {
     var obj = {};
     return obj;
@@ -186,52 +184,55 @@ app.filter('propsFilter', function () {
     };
 });
 
-app.service('apiService', ['$http', '$q', 'appConsts', function ($http, $q, appConsts) {
+app.service('apiService', function ($http, $q, login, localstorage) {
     var apiService = {};
-    var config = {
-        headers: {
+
+    var prepareAuthHeaders = function () {
+        return {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-        }
+            'Authorization': 'Bearer ' + localstorage.getToken()
+        };
     };
 
     apiService.post = function (url, data) {
-        var input = angular.copy(data);
-        if (input != null)
-            input = JSON.stringify(input);
+        var d = angular.copy(data);
+        var p = null;
+        if (typeof d !== 'undefined' && d !== null)
+            p = JSON.stringify(d);
 
         var canceller = $q.defer();
         var tconfig = {
-            headers: config.headers,
+            headers: prepareAuthHeaders(),
             timeout: canceller.promise
         };
-        var promise = $http.post(url, data, tconfig).then(success, error);
+        var promise = $http.post(url, p, tconfig).then(success, error);
         return {
             promise: promise,
             cancel: function (reason) {
                 canceller.resolve(reason);
             }
         };
-    }
+    };
 
     apiService.get = function (url, data) {
-        var input = angular.copy(data);
-        if (input != null) {
-            input = JSON.stringify(input);
-        }
+        var d = angular.copy(data);
+        var p = "";
+        if (typeof d !== 'undefined' && d !== null)
+            P = '?' + $.param(d);
+
         var canceller = $q.defer();
         var tconfig = {
-            headers: config.headers,
+            headers: prepareAuthHeaders(),
             timeout: canceller.promise
         };
-        var promise = $http.get(url, data, tconfig).then(success, error);
+        var promise = $http.get(url + p, tconfig).then(success, error);
         return {
             promise: promise,
             cancel: function (reason) {
                 canceller.resolve(reason);
             }
         };
-    }
+    };
 
     apiService.getOnly = function (url) {
         return $http.get(url, {
@@ -242,23 +243,109 @@ app.service('apiService', ['$http', '$q', 'appConsts', function ($http, $q, appC
     };
 
     var success = function (result) {
-        if (result != null && result.data != null && result.data.d != null) {
-            var x = result.data.d;
+        if (result && result.data)
             return angular.fromJson(result.data);
-        } else null;
+        return null;
     };
 
     var error = function (result) {
-        if (result.status == 401) {
-            //TODO: Handle unauthorized
-            // window.location.href = "/relogin.aspx";
+        if (result && result.status === 401) {
+            login.open(true);
+            return $q.resolve(null);
         } else {
-            if (result.data && result.data.message) window.alert(result.data.message);
+            if (result && result.data && result.data.message) window.alert(result.data.message);
             else window.alert("Something went wrong!!");
+            return $q.reject(result);
         }
-        return $q.reject(result);
     };
 
     return apiService;
+});
 
-}]);
+app.factory("login", function ($uibModal) {
+    var obj = {};
+    obj.open = function (isUnauthorized) {
+        var modalInstance = $uibModal.open({
+            templateUrl: '/uitemplates/loginmodal.tmpl.html',
+            keyboard: true,
+            backdrop: 'static',
+            controller: function ($scope, apiService, $uibModalInstance, localstorage) {
+                var vm = $scope;
+
+                vm.isUnauthorized = isUnauthorized;
+                vm.loginApiUrl = "/api/authenticate";
+                vm.pwdInputType = 'password';
+                vm.isLoggingIn = false;
+                vm.loginmodel = {
+                    username: "",
+                    password: ""
+                };
+
+                vm.hideShowPassword = function () {
+                    if (vm.pwdInputType === 'password')
+                        vm.pwdInputType = 'text';
+                    else
+                        vm.pwdInputType = 'password';
+                };
+
+                vm.onInit = function () {
+                };
+
+                vm.closePopup = function () { $uibModalInstance.close(); };
+
+                vm.onLogin = function () {
+                    if (!vm.loginmodel.username || !vm.loginmodel.password) {
+                        window.alert("Please enter Username and Password.");
+                        return;
+                    }
+                    vm.isLoggingIn = true;
+                    apiService.post(vm.loginApiUrl, vm.loginmodel).promise
+                        .then(function (r) {
+                            if (r.status === 1) {
+                                localstorage.setItem("token", r.data.token);
+                                vm.closePopup();
+                            }
+                            else {
+                                window.alert("Invalid username or password!!");
+                            }
+
+                            vm.isLoggingIn = false;
+                        })
+                        .catch(function (e) {
+                            console.log(e.data);
+                            vm.isLoggingIn = false;
+                        });
+                };
+
+                vm.onInit();
+            }
+        });
+        return modalInstance;
+    };
+    return obj;
+});
+
+app.factory("localstorage", function ($window) {
+    var obj = {};
+    obj.setItem = function (key, value) {
+        $window.localStorage[key] = value;
+    };
+    obj.addItem = function (key, value) {
+        obj.setItem(key, value);
+    };
+    obj.removeItem = function (key) {
+        $window.localStorage.removeItem(key);
+    };
+    obj.getItem = function (key) {
+        return $window.localStorage[key];
+    };
+    obj.clear = function () {
+        return $window.localStorage.clear();
+    };
+    obj.getToken = function () {
+        var x = $window.localStorage["token"];
+        if (!x) return "";
+        return x;
+    };
+    return obj;
+});

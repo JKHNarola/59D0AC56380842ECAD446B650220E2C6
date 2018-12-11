@@ -6,7 +6,7 @@ exports.sendOkResult = function (res, message, data, status) {
     prepareHeader(res);
     res.statusCode = 200;
     var x = {};
-    if (status) x.status = status;
+    if (typeof status !== 'undefined' && status !== null) x.status = status;
     if (message) x.message = message;
     if (data) x.data = data;
     res.send(JSON.stringify(x));

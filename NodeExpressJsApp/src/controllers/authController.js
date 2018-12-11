@@ -14,7 +14,7 @@ exports.authenticateAsync = async function (req, res, next) {
         }
 
         var user = await repo.authenticateAsync(u, p);
-        if (!user) {
+        if (user !== null) {
             var payload = {
                 user: user
             };

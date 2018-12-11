@@ -68,3 +68,5 @@ NodeExpressJsApp/.editorconfig
 
 NodeExpressJsApp/bin/
 NodeExpressJsApp/obj/
+
+.vs

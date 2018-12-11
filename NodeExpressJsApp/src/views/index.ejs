@@ -3,11 +3,11 @@
 <% include ./partials/head %>
 
 <body>
-    <div ng-cloak ng-app="app" ng-controller="mainCtrl">
+    <div ng-cloak ng-app="app" ng-controller="mainCtrl" ng-init="onInit()">
         <div class="container">
             <% include ./partials/nav %>
             <div class="page-area">
-                <section name="jumbotron" ng-click="openLogin()">
+                <section name="jumbotron">
                     <div class="jumbotron text-center">
                         <h1>App is being served with node.js</h1>
                         <p>Using EJS templating</p>

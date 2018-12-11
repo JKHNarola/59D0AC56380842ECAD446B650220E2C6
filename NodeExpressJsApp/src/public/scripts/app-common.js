@@ -240,7 +240,7 @@ app.service('apiService', function ($http, $q, login, localstorage) {
     return apiService;
 });
 
-app.factory("login", function ($uibModal) {
+app.factory("login", function ($uibModal, localstorage) {
     var obj = {};
     obj.open = function (isUnauthorized) {
         var modalInstance = $uibModal.open({
@@ -269,7 +269,7 @@ app.factory("login", function ($uibModal) {
                 vm.onInit = function () {
                 };
 
-                vm.closePopup = function () { $uibModalInstance.close(); };
+                vm.closePopup = function (isLoggedIn) { $uibModalInstance.close(isLoggedIn); };
 
                 vm.onLogin = function () {
                     if (!vm.loginmodel.username || !vm.loginmodel.password) {
@@ -281,7 +281,8 @@ app.factory("login", function ($uibModal) {
                         .then(function (r) {
                             if (r.status === 1) {
                                 localstorage.setItem("token", r.data.token);
-                                vm.closePopup();
+                                localstorage.setItem("user", r.data.user);
+                                vm.closePopup(true);
                             }
                             else {
                                 window.alert("Invalid username or password!!");
@@ -298,7 +299,24 @@ app.factory("login", function ($uibModal) {
                 vm.onInit();
             }
         });
-        return modalInstance;
+        modalInstance.result.then(function (res) {
+            if (res) {
+
+            }
+        });
+    };
+    obj.setUi = function () {
+        if (localstorage.getToken()) {
+            var u = localstorage.getItem("user");
+            document.getElementById('loginlnk').style.display = 'none';
+            document.getElementById('userlnk').style.display = 'block';
+            document.getElementById('userlnkdrop').innerHTML = u.fullname;
+        }
+        else {
+            document.getElementById('loginlnk').style.display = 'block';
+            document.getElementById('userlnk').style.display = 'none';
+            document.getElementById('userlnkdrop').innerHTML = "";
+        }
     };
     return obj;
 });
@@ -306,6 +324,8 @@ app.factory("login", function ($uibModal) {
 app.factory("localstorage", function ($window) {
     var obj = {};
     obj.setItem = function (key, value) {
+        if (typeof value === 'object' && value !== null)
+            value = JSON.stringify(value);
         $window.localStorage[key] = value;
     };
     obj.addItem = function (key, value) {
@@ -315,7 +335,13 @@ app.factory("localstorage", function ($window) {
         $window.localStorage.removeItem(key);
     };
     obj.getItem = function (key) {
-        return $window.localStorage[key];
+        var val = $window.localStorage[key];
+        try {
+            return JSON.parse(val);
+        }
+        catch (e) {
+            return val;
+        }
     };
     obj.clear = function () {
         return $window.localStorage.clear();

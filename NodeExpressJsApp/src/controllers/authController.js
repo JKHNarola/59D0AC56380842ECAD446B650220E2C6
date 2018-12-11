@@ -25,7 +25,8 @@ exports.authenticateAsync = async function (req, res, next) {
             loginmanager.addlogin(user.userId, token);
 
             var d = {
-                token: token
+                token: token,
+                user: payload.user
             };
             reshelper.sendOkResult(res, "Authentication successful.", d, 1);
         } else

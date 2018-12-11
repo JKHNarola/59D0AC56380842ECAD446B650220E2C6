@@ -1,4 +1,8 @@
 app.controller('mainCtrl', function ($scope, apiService, login) {
+    $scope.onInit = function () {
+        login.setUi();
+    };
+
     $scope.openLogin = function () {
         login.open();
     };

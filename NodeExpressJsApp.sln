@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "NodeExpressJsApp", "NodeExpressJsApp\NodeExpressJsApp.njsproj", "{7446F286-A6BA-4794-AAAA-4586DCBCFFFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7446F286-A6BA-4794-AAAA-4586DCBCFFFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7446F286-A6BA-4794-AAAA-4586DCBCFFFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7446F286-A6BA-4794-AAAA-4586DCBCFFFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7446F286-A6BA-4794-AAAA-4586DCBCFFFB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {934C1E36-C86F-4807-8666-797D9C675D65}
+	EndGlobalSection
+EndGlobal

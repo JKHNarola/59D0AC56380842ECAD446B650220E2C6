@@ -57,7 +57,7 @@ exports.logout = function (req, res, next) {
                 reshelper.sendOtherResult(res, 401, "You are not authorized to access. Invalid access token.");
             } else {
                 loginmanager.removelogin(decoded.user.UserId);
-                reshelper.sendOkResult(res, "You are successfully logged out.");
+                reshelper.sendOkResult(res, "You are successfully logged out.", null, 1);
             }
 
         } else {

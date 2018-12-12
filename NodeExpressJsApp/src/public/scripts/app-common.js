@@ -1,4 +1,5 @@
 var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
+
 app.constant('appResources', function () {
     var obj = {};
     return obj;
@@ -18,6 +19,16 @@ app.factory('appUtils', function () {
     obj.isNullEmpty = function (v) {
         return (v ? v.toString().trim() : "").length === 0;
     };
+
+    obj.getQueryParameterByName = function (name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
     return obj;
 });
 
@@ -162,7 +173,7 @@ app.filter('propsFilter', function () {
     };
 });
 
-app.service('apiService', function ($http, $q, login, localstorage) {
+app.service('apiService', function ($window, $http, $q, login, localstorage) {
     var apiService = {};
 
     var prepareAuthHeaders = function () {
@@ -228,7 +239,8 @@ app.service('apiService', function ($http, $q, login, localstorage) {
 
     var error = function (result) {
         if (result && result.status === 401) {
-            login.open(true);
+            localstorage.removeItem("token");
+            $window.location.href = '/?needlogin=1';
             return $q.resolve(null);
         } else {
             if (result && result.data && result.data.message) window.alert(result.data.message);
@@ -242,7 +254,7 @@ app.service('apiService', function ($http, $q, login, localstorage) {
 
 app.factory("login", function ($uibModal, localstorage) {
     var obj = {};
-    obj.open = function (isUnauthorized) {
+    obj.open = function () {
         var modalInstance = $uibModal.open({
             templateUrl: '/uitemplates/loginmodal.tmpl.html',
             keyboard: true,
@@ -250,7 +262,6 @@ app.factory("login", function ($uibModal, localstorage) {
             controller: function ($scope, apiService, $uibModalInstance, localstorage) {
                 var vm = $scope;
 
-                vm.isUnauthorized = isUnauthorized;
                 vm.loginApiUrl = "/api/authenticate";
                 vm.pwdInputType = 'password';
                 vm.isLoggingIn = false;
@@ -301,21 +312,27 @@ app.factory("login", function ($uibModal, localstorage) {
         });
         modalInstance.result.then(function (res) {
             if (res) {
-
+                setNavUi();
             }
         });
     };
-    obj.setUi = function () {
+    var setNavUi = obj.setNavUi = function () {
         if (localstorage.getToken()) {
             var u = localstorage.getItem("user");
-            document.getElementById('loginlnk').style.display = 'none';
-            document.getElementById('userlnk').style.display = 'block';
-            document.getElementById('userlnkdrop').innerHTML = u.fullname;
+            $('#lnklogin').hide();
+            $('#lnkreg').hide();
+            $('#lnkuser').show();
+            $('#lnkuserdrop').html(u.fullname);
+
+            $('#lnkcat').show();
         }
         else {
-            document.getElementById('loginlnk').style.display = 'block';
-            document.getElementById('userlnk').style.display = 'none';
-            document.getElementById('userlnkdrop').innerHTML = "";
+            $('#lnklogin').show();
+            $('#lnkreg').show();
+            $('#lnkuser').hide();
+            $('#lnkuserdrop').html("");
+
+            $('#lnkcat').hide();
         }
     };
     return obj;

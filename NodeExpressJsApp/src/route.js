@@ -1,13 +1,16 @@
 var authorize = require('./middlewares/authorizejwttoken');
 
 module.exports = function (app) {
-    var pagesCtrl = require("./controllers/pagesController");
+    var homeCtrl = require("./controllers/homeController");
     var catCtrl = require("./controllers/categoryController");
     var authCtrl = require("./controllers/authController");
 
     //Routes for pages
     app.route('/')
-        .get(pagesCtrl.indexPage);
+        .get(homeCtrl.index);
+
+    app.route('/categories')
+        .get(catCtrl.index);
 
     app.route('/testerror')
         .get(function (req, res) {

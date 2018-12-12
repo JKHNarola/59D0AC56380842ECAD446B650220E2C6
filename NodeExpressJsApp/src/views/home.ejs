@@ -3,7 +3,7 @@
 <% include ./partials/head %>
 
 <body>
-    <div ng-cloak ng-app="app" ng-controller="mainCtrl" ng-init="onInit()">
+    <div ng-cloak ng-app="app" ng-controller="homeCtrl" ng-init="onInit()">
         <div class="container">
             <% include ./partials/nav %>
             <div class="page-area">
@@ -13,12 +13,12 @@
                         <p>Using EJS templating</p>
                     </div>
                 </section>
-                <% include ./partials/footer %>
             </div>
+            <% include ./partials/footer %>
         </div>
     </div>
     <% include ./partials/scripts %>
-    <script src="/scripts/main-controller.js"></script>
+    <script src="/scripts/home-controller.js"></script>
 </body>
 
 </html>

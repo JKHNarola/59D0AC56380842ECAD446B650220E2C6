@@ -1,10 +1,5 @@
-app.controller('mainCtrl', function ($scope, apiService, login) {
+app.controller('homeCtrl', function ($scope, apiService) {
     $scope.onInit = function () {
-        login.setUi();
-    };
-
-    $scope.openLogin = function () {
-        login.open();
     };
 
     $scope.onGet = function () {

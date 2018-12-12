@@ -5,7 +5,7 @@ var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
 exports.listAsync = async function () {
     if (!pool.connected)
         await pool.connect();
-    var result = await pool.query("SELECT CategoryID, CategoryName, Description FROM CATEGORIES");
+    var result = await pool.query("SELECT CategoryID, CategoryName, Description, Picture FROM CATEGORIES");
     if (pool.connected)
         await pool.close();
     return camelCase(result.recordsets[0]);
@@ -16,7 +16,7 @@ exports.getAsync = async function (id) {
         await pool.connect();
     var result = await pool.request()
         .input('id', sql.Int, id)
-        .query("SELECT CategoryID, CategoryName, Description FROM CATEGORIES WHERE CategoryID=@id");
+        .query("SELECT CategoryID, CategoryName, Description, Picture FROM CATEGORIES WHERE CategoryID=@id");
     if (pool.connected)
         await pool.close();
 

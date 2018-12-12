@@ -4,8 +4,8 @@
 
 <body>
     <div ng-cloak ng-app="app" ng-controller="homeCtrl" ng-init="onInit()">
-        <div class="container">
-            <% include ./partials/nav %>
+        <% include ./partials/nav %>
+        <main role="main" class="container">
             <div class="page-area">
                 <section name="jumbotron">
                     <div class="jumbotron text-center">
@@ -14,8 +14,8 @@
                     </div>
                 </section>
             </div>
-            <% include ./partials/footer %>
-        </div>
+        </main>
+        <% include ./partials/footer %>
     </div>
     <% include ./partials/scripts %>
     <script src="/scripts/home-controller.js"></script>

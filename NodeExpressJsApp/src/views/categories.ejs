@@ -4,12 +4,18 @@
 
 <body>
     <div ng-cloak ng-app="app" ng-controller="categoriesCtrl" ng-init="onInit()">
-        <div class="container">
-            <% include ./partials/nav %>
+        <% include ./partials/nav %>
+        <main role="main" class="container">
             <div class="page-area">
+                <ul class="list-group" ng-repeat="t in data">
+                    <li class="list-group-item my-2">
+                        <img ng-src="{{t.picture}}" height="60" />
+                        {{t.categoryName}} - {{t.description}}
+                    </li>
+                </ul>
             </div>
-            <% include ./partials/footer %>
-        </div>
+        </main>
+        <% include ./partials/footer %>
     </div>
     <% include ./partials/scripts %>
     <script src="/scripts/categories-controller.js"></script>

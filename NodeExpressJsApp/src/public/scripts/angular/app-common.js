@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
+var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'swangular']);
 
 app.constant('appResources', function () {
     var obj = {};
@@ -218,7 +218,7 @@ app.filter('propsFilter', function () {
     };
 });
 
-app.service('apiService', function ($window, $http, $q, localstorage, appUtils) {
+app.service('apiService', function ($window, $http, $q, localstorage, appUtils, swangular) {
     var apiService = {};
 
     var prepareAuthHeaders = function () {
@@ -288,8 +288,8 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils) 
             appUtils.redirect('/?needlogin=1&redirecturl=' + $window.location.pathname);
             return $q.resolve(null);
         } else {
-            if (result && result.data && result.data.message) window.alert(result.data.message);
-            else window.alert("Something went wrong!!");
+            if (result && result.data && result.data.message) swangular.alert(result.data.data, { type: 'error', title: result.data.message});
+            else swangular.alert("Something went wrong!!", { type: 'error', title: "Error" });
             return $q.reject(result);
         }
     };

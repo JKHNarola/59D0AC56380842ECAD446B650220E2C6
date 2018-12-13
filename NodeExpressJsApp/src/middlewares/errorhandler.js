@@ -10,15 +10,26 @@ module.exports = function (app) {
     });
 
     app.use(function (err, req, res, next) {
-        if (err && err.status) {
-            resHelper.sendPage(res, 404, "404.html");
-        } else {
+        if (req && req.path && req.path.startsWith("/api/")) {
             if (global.isDev) {
                 console.error(err.stack);
-                resHelper.sendError(req, res, err);
+                resHelper.sendErrorResult(res, err.message, err.stack);
             } else {
-                resHelper.sendPage(res, 500, "500.html");
+                resHelper.sendErrorResult(res, "Something went wrong!!");
                 emailService.sendErrorMail(err, req);
+            }
+        }
+        else {
+            if (err && err.status) {
+                resHelper.sendPage(res, 404, "404.html");
+            } else {
+                if (global.isDev) {
+                    console.error(err.stack);
+                    resHelper.showErrorPage(req, res, err);
+                } else {
+                    resHelper.sendPage(res, 500, "500.html");
+                    emailService.sendErrorMail(err, req);
+                }
             }
         }
     });

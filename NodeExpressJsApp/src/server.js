@@ -10,7 +10,7 @@ try {
     //Set application globals
     var configFile = path.join(__dirname, 'appconfig.json');
     if (fs.existsSync(configFile))
-        global.appconfig = JSON.parse(fs.readFileSync(configFile));
+        global.appconfig = JSON.parse(fs.readFileSync(configFile).toString().trim());
 
     if (!global.appconfig) global.appconfig = {};
     if (!global.appconfig.env) global.appconfig.env = process.env.env ? process.env.env.toString() : "prod";

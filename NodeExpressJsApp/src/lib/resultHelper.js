@@ -42,7 +42,7 @@ exports.sendPage = function (res, statuscode, pagename) {
         this.sendOtherResult(res, 500, "View file " + pagename + " not exists.");
 };
 
-exports.sendError = function (req, res, error) {
+exports.showErrorPage = function (req, res, error) {
     prepareHeader(res, "html");
     res.statusCode = 500;
     var s = error.stack ? error.stack : error;

@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="app">
 <% include ./partials/head %>
 
-<body>
-    <div ng-cloak ng-app="app" ng-controller="homeCtrl" ng-init="onInit()">
-        <% include ./partials/nav %>
-        <main role="main" class="container">
-            <div class="page-area">
-                <section name="jumbotron">
-                    <div class="jumbotron text-center">
-                        <h1>App is being served with node.js</h1>
-                        <p>Using EJS templating</p>
-                    </div>
-                </section>
-            </div>
-        </main>
-        <% include ./partials/footer %>
-    </div>
+<body ng-cloak>
+    <% include ./partials/nav %>
+    <main role="main" class="container" ng-controller="homeCtrl" ng-init="onInit()">
+        <div class="page-area">
+            <section name="jumbotron">
+                <div class="jumbotron text-center">
+                    <h1>App is being served with node.js</h1>
+                    <p>Using EJS templating</p>
+                </div>
+            </section>
+        </div>
+    </main>
+    <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script src="/scripts/angular/controllers/home-controller.js"></script>
 </body>
-
 </html>

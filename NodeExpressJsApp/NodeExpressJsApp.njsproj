@@ -58,6 +58,7 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Content Include="src\appconfig.json" />
     <Content Include="src\controllers\homeController.js" />
     <Content Include="src\public\favicon.ico" />
+    <Content Include="src\public\images\no-image-available.png" />
     <Content Include="src\public\images\tmpimg.jpg" />
     <Content Include="src\public\styles\errorstyle.css" />
     <Content Include="src\public\styles\shards-extras.min.css" />

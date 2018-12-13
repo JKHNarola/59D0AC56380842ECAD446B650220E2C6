@@ -9,7 +9,7 @@ app.factory("appConsts", function (appResources) {
     return appResources();
 });
 
-app.factory('appUtils', function () {
+app.factory('appUtils', function ($window) {
     var obj = {};
 
     obj.is$onChanges = function (changes, property) {
@@ -69,6 +69,10 @@ app.factory('appUtils', function () {
 
     obj.arrayBufferToBase64Image = function (arrayBuffer) {
         return 'data:image/png;base64,' + this.arrayBufferToBase64(arrayBuffer);
+    };
+
+    obj.redirect = function (url) {
+        $window.location.href = url;
     };
     return obj;
 });
@@ -214,7 +218,7 @@ app.filter('propsFilter', function () {
     };
 });
 
-app.service('apiService', function ($window, $http, $q, localstorage) {
+app.service('apiService', function ($window, $http, $q, localstorage, appUtils) {
     var apiService = {};
 
     var prepareAuthHeaders = function () {
@@ -281,7 +285,7 @@ app.service('apiService', function ($window, $http, $q, localstorage) {
     var error = function (result) {
         if (result && result.status === 401) {
             localstorage.removeItem("token");
-            $window.location.href = '/?needlogin=1';
+            appUtils.redirect('/?needlogin=1&redirecturl=' + $window.location.pathname);
             return $q.resolve(null);
         } else {
             if (result && result.data && result.data.message) window.alert(result.data.message);
@@ -293,14 +297,15 @@ app.service('apiService', function ($window, $http, $q, localstorage) {
     return apiService;
 });
 
-app.factory("login", function ($uibModal, localstorage) {
+app.factory("login", function ($uibModal, localstorage, appUtils) {
     var obj = {};
-    obj.open = function () {
+    obj.open = function (redirectUrl) {
         var modalInstance = $uibModal.open({
             templateUrl: '/uitemplates/loginmodal.tmpl.html',
+            windowClass: "center-modal transparent-modal",
             keyboard: true,
             backdrop: 'static',
-            controller: function ($scope, apiService, $uibModalInstance, localstorage) {
+            controller: function ($scope, apiService, $uibModalInstance, localstorage, $window) {
                 var vm = $scope;
 
                 vm.loginApiUrl = "/api/authenticate";
@@ -334,7 +339,10 @@ app.factory("login", function ($uibModal, localstorage) {
                             if (r.status === 1) {
                                 localstorage.setItem("token", r.data.token);
                                 localstorage.setItem("user", r.data.user);
-                                vm.closePopup(true);
+                                if (typeof redirectUrl !== 'undefined' && redirectUrl)
+                                    appUtils.redirect(redirectUrl);
+                                else
+                                    vm.closePopup(true);
                             }
                             else {
                                 window.alert("Invalid username or password!!");

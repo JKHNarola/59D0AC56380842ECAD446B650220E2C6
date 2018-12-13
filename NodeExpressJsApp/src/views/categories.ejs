@@ -1,33 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="app">
 <% include ./partials/head %>
 
-<body>
-    <div ng-cloak ng-app="app" ng-controller="categoriesCtrl" ng-init="onInit()">
-        <% include ./partials/nav %>
-        <main role="main" class="container">
-            <div class="page-area">
-                <div class="row">
-                    <div ng-repeat="t in data" class="col-lg-3 col-md-3 col-sm-6 mb-4">
-                        <div class="card">
-                            <img class="card-img-top" ng-src="{{t.picture}}" alt="{{t.categoryName}}">
-                            <div class="card-body">
-                                <h4 class="card-title">{{t.categoryName}}</h4>
-                                <p class="card-text">
-                                    {{t.description}}
-                                </p>
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-sm btn-primary">Edit</button>
-                                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
-                                </div> 
+<body ng-cloak>
+    <% include ./partials/nav %>
+    <main role="main" class="container" ng-controller="categoriesCtrl" ng-init="onInit()">
+        <div class="page-area">
+            <div class="row">
+                <div ng-repeat="t in data" class="col-lg-3 col-md-3 col-sm-6 mb-4">
+                    <div class="card">
+                        <img class="card-img-top" ng-src="{{t.picture}}" alt="{{t.categoryName}}">
+                        <div class="card-body">
+                            <h4 class="card-title">{{t.categoryName}}</h4>
+                            <p class="card-text">
+                                {{t.description}}
+                            </p>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-primary">Edit</button>
+                                <button type="button" class="btn btn-sm btn-danger">Delete</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
-        <% include ./partials/footer %>
-    </div>
+        </div>
+    </main>
+    <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script src="/scripts/angular/controllers/categories-controller.js"></script>
 </body>

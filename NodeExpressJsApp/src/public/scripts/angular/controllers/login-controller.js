@@ -2,7 +2,8 @@ app.controller('loginCtrl', function ($window, $scope, login, appUtils, apiServi
     $scope.onInit = function () {
         login.setNavUi();
         var needlogin = appUtils.getQueryParameterByName("needlogin");
-        if (needlogin && needlogin === "1") login.open();
+        if (needlogin && needlogin === "1")
+            login.open(appUtils.getQueryParameterByName("redirecturl"));
     };
 
     $scope.openLogin = function () {
@@ -15,7 +16,7 @@ app.controller('loginCtrl', function ($window, $scope, login, appUtils, apiServi
                 console.log(r);
                 if (r.status === 1) {
                     localstorage.clear();
-                    $window.location.href = '/';
+                    appUtils.redirect('/');
                 }
             })
             .catch(function (e) {

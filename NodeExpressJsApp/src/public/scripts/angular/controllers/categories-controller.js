@@ -10,7 +10,8 @@ app.controller('categoriesCtrl', function ($scope, apiService, appUtils) {
             .then(function (r) {
                 if (r.status === 1) {
                     r.data.forEach(function (x) {
-                        x.picture = appUtils.arrayBufferToBase64Image(x.picture.data);
+                        if (x.picture) x.picture = appUtils.arrayBufferToBase64Image(x.picture.data);
+                        else x.picture = '/images/no-image-available.png';
                     });
                     $scope.data = r.data;
                 }

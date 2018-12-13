@@ -214,7 +214,7 @@ app.filter('propsFilter', function () {
     };
 });
 
-app.service('apiService', function ($window, $http, $q, login, localstorage) {
+app.service('apiService', function ($window, $http, $q, localstorage) {
     var apiService = {};
 
     var prepareAuthHeaders = function () {

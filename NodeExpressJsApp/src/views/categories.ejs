@@ -7,18 +7,29 @@
         <% include ./partials/nav %>
         <main role="main" class="container">
             <div class="page-area">
-                <ul class="list-group" ng-repeat="t in data">
-                    <li class="list-group-item my-2">
-                        <img ng-src="{{t.picture}}" height="60" />
-                        {{t.categoryName}} - {{t.description}}
-                    </li>
-                </ul>
+                <div class="row">
+                    <div ng-repeat="t in data" class="col-lg-3 col-md-3 col-sm-6 mb-4">
+                        <div class="card">
+                            <img class="card-img-top" ng-src="{{t.picture}}" alt="{{t.categoryName}}">
+                            <div class="card-body">
+                                <h4 class="card-title">{{t.categoryName}}</h4>
+                                <p class="card-text">
+                                    {{t.description}}
+                                </p>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-primary">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         <% include ./partials/footer %>
     </div>
     <% include ./partials/scripts %>
-    <script src="/scripts/categories-controller.js"></script>
+    <script src="/scripts/angular/controllers/categories-controller.js"></script>
 </body>
 
 </html>

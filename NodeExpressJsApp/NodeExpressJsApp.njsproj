@@ -41,6 +41,7 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Compile Include="src\lib\mailservice.js" />
     <Compile Include="src\lib\reqHelper.js" />
     <Compile Include="src\lib\resultHelper.js" />
+    <Compile Include="src\lib\utils.js" />
     <Compile Include="src\middlewares\authorizejwttoken.js" />
     <Compile Include="src\middlewares\errorhandler.js" />
     <Compile Include="src\public\scripts\app-common.js" />

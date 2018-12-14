@@ -222,6 +222,12 @@ app.filter('propsFilter', function () {
     };
 });
 
+app.filter('trusted', ['$sce', function ($sce) {
+    return function (text) {
+        return $sce.trustAsHtml(text);
+    };
+}]);
+
 app.service('apiService', function ($window, $http, $q, localstorage, appUtils, messageBox) {
     var apiService = {};
 
@@ -292,8 +298,8 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
             appUtils.redirect('/?needlogin=1&redirecturl=' + appUtils.encodeUrl($window.location.pathname));
             return $q.resolve(null);
         } else {
-            if (result && result.data && result.data.message) messageBox.showError("Error", result.data.message, result.data.data? result.data.data.toString() : "");
-            else messageBox.showError("Error", "Something went wrong!!", "Some error occured while processing your request!!");
+            if (result && result.data && result.data.message) messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
+            else messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request!!");
             return $q.reject(result);
         }
     };
@@ -426,6 +432,55 @@ app.factory("localstorage", function ($window) {
 });
 
 app.factory("messageBox", function ($uibModal) {
+    var open = function (config) {
+        var modalInstance = $uibModal.open({
+            templateUrl: '/uitemplates/messagebox.tmpl.html',
+            keyboard: true,
+            backdrop: 'static',
+            controller: function ($scope, $uibModalInstance) {
+                var vm = $scope;
+                vm.title = config.title;
+                vm.text = config.text;
+                vm.subText = config.subText;
+                vm.icon = config.icon;
+                vm.isOk = config.isOk ? config.isOk : false;
+                vm.isCancel = config.isCancel ? config.isCancel : false;
+                vm.isYes = config.isYes ? config.isYes : false;
+                vm.isNo = config.isNo ? config.isNo : false;
+                vm.isCustomContent = config.isCustomContent ? config.isCustomContent : false;
+                vm.content = config.content;
+                vm.showIcon = config.showIcon ? config.showIcon : true;
+
+                vm.onInit = function () {
+                };
+
+                vm.closePopup = function (t) { $uibModalInstance.close(t); };
+
+                vm.onInit();
+            }
+        });
+        modalInstance.result.then(function (res) {
+            if (typeof res !== 'undefined') {
+                switch (res) {
+                    case "ok":
+                        config.okCallback();
+                        break;
+                    case "cancel":
+                        config.cancelCallback();
+                        break;
+                    case "yes":
+                        config.yesCallback();
+                        break;
+                    case "no":
+                        config.noCallback();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    };
+
     var obj = {};
     obj.showInfo = function (title, message, submessage, callback) {
         if (typeof callback === "undefined") callback = function () {
@@ -487,53 +542,82 @@ app.factory("messageBox", function ($uibModal) {
         };
         open(config);
     };
+    obj.showCustom = function (title, content, callback) {
+        if (typeof callback === "undefined") callback = function () {
+            return;
+        };
 
-    var open = function (config) {
-        var modalInstance = $uibModal.open({
-            templateUrl: '/uitemplates/messagebox.tmpl.html',
-            keyboard: true,
-            backdrop: 'static',
-            controller: function ($scope, $uibModalInstance) {
-                var vm = $scope;
-                vm.title = config.title;
-                vm.text = config.text;
-                vm.subText = config.subText;
-                vm.icon = config.icon;
-                vm.isOk = config.isOk ? config.isOk : false;
-                vm.isCancel = config.isCancel ? config.isCancel : false;
-                vm.isYes = config.isYes ? config.isYes : false;
-                vm.isNo = config.isNo ? config.isNo : false;
-                vm.isCustomContent = config.isCustomContent ? config.isCustomContent : false;
-                vm.content = config.content;
+        var config = {
+            title: title,
+            isOk: true,
+            okCallback: callback,
+            isCustomContent: true,
+            content: content
+        };
+        open(config);
+    };
 
-                vm.onInit = function () {
-                };
+    obj.confirm = function (title, message, submessage, okCallback, cancelCallback) {
+        if (typeof okCallback === "undefined") throw new Error("okCallback not provided");
+        if (typeof cancelCallback === "undefined") cancelCallback = function () { return; };
 
-                vm.closePopup = function (t) { $uibModalInstance.close(t); };
+        var config = {
+            title: title,
+            text: message,
+            subText: submessage,
+            showIcon: false,
+            isOk: true,
+            isCancel: true,
+            okCallback: okCallback,
+            cancelCallback: cancelCallback
+        };
+        open(config);
+    };
+    obj.confirmYesNo = function (title, message, submessage, yesCallback, noCallback) {
+        if (typeof yesCallback === "undefined") throw new Error("yesCallback is not provided!!");
+        if (typeof noCallback === "undefined") throw new Error("noCallback is not provided!!");
 
-                vm.onInit();
-            }
-        });
-        modalInstance.result.then(function (res) {
-            if (typeof res !== 'undefined') {
-                switch (res) {
-                    case "ok":
-                        config.okCallback();
-                        break;
-                    case "cancel":
-                        config.cancelCallback();
-                        break;
-                    case "yes":
-                        config.yesCallback();
-                        break;
-                    case "no":
-                        config.noCallback();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
+        var config = {
+            title: title,
+            text: message,
+            subText: submessage,
+            showIcon: false,
+            isYes: true,
+            isNo: true,
+            yesCallback: yesCallback,
+            noCallback: noCallback
+        };
+        open(config);
+    };
+    obj.confirmCustom = function (title, content, okCallback, cancelCallback) {
+        if (typeof okCallback === "undefined") throw new Error("okCallback not provided");
+        if (typeof cancelCallback === "undefined") cancelCallback = function () { return; };
+
+        var config = {
+            title: title,
+            isCustomContent: true,
+            content: content,
+            isOk: true,
+            isCancel: true,
+            okCallback: okCallback,
+            cancelCallback: cancelCallback
+        };
+        open(config);
+    };
+    obj.confirmCustomYesNo = function (title, content, yesCallback, noCallback) {
+        if (typeof yesCallback === "undefined") throw new Error("yesCallback is not provided!!");
+        if (typeof noCallback === "undefined") throw new Error("noCallback is not provided!!");
+
+        var config = {
+            title: title,
+            isCustomContent: true,
+            content: content,
+            isYes: true,
+            isNo: true,
+            yesCallback: yesCallback,
+            noCallback: noCallback
+        };
+        open(config);
     };
 
     return obj;

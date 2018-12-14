@@ -5,25 +5,24 @@
 <div class="modal-body">
     <div class="row" ng-if="!isCustomContent">
         <div class="col-sm-12">
-            <div class="text-center mt-0" style="font-size: 6rem; line-height: 6rem; opacity: 0.5;">
+            <div ng-if="showIcon" class="text-center mt-0" style="font-size: 6rem; line-height: 6rem; opacity: 0.5;">
                 <i ng-if="icon=='success'" class="zmdi zmdi-check-circle text-success" aria-hidden="true"></i>
                 <i ng-if="icon=='info'" class="zmdi zmdi-info text-info" aria-hidden="true"></i>
                 <i ng-if="icon=='error'" class="zmdi zmdi-close-circle text-danger" aria-hidden="true"></i>
                 <i ng-if="icon=='warning'" class="zmdi zmdi-alert-circle text-warning" aria-hidden="true"></i>
                 <i ng-if="icon=='question'" class="zmdi zmdi-help text-info" aria-hidden="true"></i>
             </div>
-            <br />
+            <br ng-if="showIcon"/>
             <h5 class="text-center" ng-if="text">{{text}}</h5>
             <p style="word-break:break-word;" ng-if="subText">{{subText}}</p>
         </div>
     </div>
-    <div class="row" ng-if="isCustomContent">
-        {{content}}
+    <div class="row" ng-if="isCustomContent" ng-bind-html="content | trusted">
     </div>
 </div>
 <div class="modal-footer">
-    <button ng-if="isOk" ng-click="closePopup('ok')" type="button" class="btn btn-primary float-right">OK</button>
     <button ng-if="isCancel" ng-click="closePopup('cancel')" type="button" class="btn btn-danger float-right">Cancel</button>
-    <button ng-if="isYes" ng-click="closePopup('yes')" type="button" class="btn btn-success float-right">Yes</button>
+    <button ng-if="isOk" ng-click="closePopup('ok')" type="button" class="btn btn-primary float-right">OK</button>
     <button ng-if="isNo" ng-click="closePopup('no')" type="button" class="btn btn-danger float-right">No</button>
+    <button ng-if="isYes" ng-click="closePopup('yes')" type="button" class="btn btn-success float-right">Yes</button>
 </div>

@@ -54,10 +54,6 @@
     background-color: rgba(0,0,0,0);
 }
 
-.close-size{
-    font-size: 1.2rem;
-}
-
 @media screen and (min-width: 768px) {
     .center-modal.modal:before {
         display: inline-block;
@@ -67,9 +63,7 @@
     }
 }
 
-@media (min-width: 1400px) {
-
-    .my-modal-popup .modal-lg {
-        width: 1308px;
-    }
+.close-size{
+    font-size: 1.2rem;
 }
+

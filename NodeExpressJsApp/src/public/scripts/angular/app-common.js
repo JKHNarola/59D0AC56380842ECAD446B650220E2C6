@@ -292,7 +292,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
             appUtils.redirect('/?needlogin=1&redirecturl=' + appUtils.encodeUrl($window.location.pathname));
             return $q.resolve(null);
         } else {
-            if (result && result.data && result.data.message) messageBox.showError("Error", result.data.message, result.data.data.toString());
+            if (result && result.data && result.data.message) messageBox.showError("Error", result.data.message, result.data.data? result.data.data.toString() : "");
             else messageBox.showError("Error", "Something went wrong!!", "Some error occured while processing your request!!");
             return $q.reject(result);
         }
@@ -491,7 +491,6 @@ app.factory("messageBox", function ($uibModal) {
     var open = function (config) {
         var modalInstance = $uibModal.open({
             templateUrl: '/uitemplates/messagebox.tmpl.html',
-            windowClass: "transparent-modal",
             keyboard: true,
             backdrop: 'static',
             controller: function ($scope, $uibModalInstance) {

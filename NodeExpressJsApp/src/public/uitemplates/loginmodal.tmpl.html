@@ -4,7 +4,7 @@
             <div class="card border-secondary">
                 <div class="card-header">
                     <h4 class="mb-0 m1-2 float-left">Login</h4>
-                    <span class="close m1-2" ng-click="closePopup()"><i class="fa fa-times-circle"></i></span>
+                    <span class="close m1-2" ng-click="closePopup()"><i class="zmdi zmdi-close close-size"></i></span>
                 </div>
                 <div class="card-body">
                     <form class="form" autocomplete="off">
@@ -19,15 +19,15 @@
                                 <div class="input-group-append">
                                     <button type="button" ng-click="hideShowPassword()"
                                             class="btn btn-default">
-                                        <i ng-if="pwdInputType=='text'" class="fa fa-eye-slash" aria-hidden="true"></i>
-                                        <i ng-if="pwdInputType=='password'" class="fa fa-eye" aria-hidden="true"></i>
+                                        <i ng-if="pwdInputType=='text'" class="zmdi zmdi-eye-off" aria-hidden="true"></i>
+                                        <i ng-if="pwdInputType=='password'" class="zmdi zmdi-eye" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <button ng-disabled="isLoggingIn" ng-click="onLogin()" type="button" class="btn btn-primary float-right">
-                                <span ng-if="isLoggingIn"><i class="fa fa-spinner fa-spin"></i>&nbsp;</span>LOGIN
+                                <span ng-if="isLoggingIn"><i class="zmdi zmdi-spinner zmdi-spin"></i>&nbsp;</span>LOGIN
                             </button>
                         </div>
                     </form>

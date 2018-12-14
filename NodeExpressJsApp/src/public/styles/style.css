@@ -1,4 +1,4 @@
-@import url("//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css");
 
 .page-area {
     margin-top: 85px;
@@ -52,6 +52,10 @@
     -moz-box-shadow: none;
     box-shadow: none;
     background-color: rgba(0,0,0,0);
+}
+
+.close-size{
+    font-size: 1.2rem;
 }
 
 @media screen and (min-width: 768px) {

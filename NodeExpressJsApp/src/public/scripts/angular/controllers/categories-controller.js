@@ -1,5 +1,4 @@
 app.controller('categoriesCtrl', function ($scope, apiService, appUtils) {
-    $scope.activePage = 'cat';
     $scope.data = [];
     $scope.onInit = function () {
         $scope.onGet();

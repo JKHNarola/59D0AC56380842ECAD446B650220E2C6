@@ -442,6 +442,21 @@ app.factory("messageBox", function ($uibModal) {
         };
         open(config);
     };
+    obj.showSuccess = function (title, message, submessage, callback) {
+        if (typeof callback === "undefined") callback = function () {
+            return;
+        };
+
+        var config = {
+            title: title,
+            text: message,
+            subText: submessage,
+            icon: "success",
+            isOk: true,
+            okCallback: callback
+        };
+        open(config);
+    };
     obj.showError = function (title, message, submessage, callback) {
         if (typeof callback === "undefined") callback = function () {
             return;

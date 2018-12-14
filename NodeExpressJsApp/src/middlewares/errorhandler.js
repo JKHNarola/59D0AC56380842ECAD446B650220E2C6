@@ -16,7 +16,7 @@ module.exports = function (app) {
                 resHelper.sendErrorResult(res, err.message, err.stack);
             } else {
                 resHelper.sendErrorResult(res, "Something went wrong!!");
-                emailService.sendErrorMail(err, req);
+                //emailService.sendErrorMail(err, req);
             }
         }
         else {

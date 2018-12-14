@@ -74,6 +74,10 @@ app.factory('appUtils', function ($window) {
     obj.redirect = function (url) {
         $window.location.href = url;
     };
+
+    obj.encodeUrl = function (input) {
+        return $window.encodeURIComponent(input);
+    };
     return obj;
 });
 
@@ -218,7 +222,7 @@ app.filter('propsFilter', function () {
     };
 });
 
-app.service('apiService', function ($window, $http, $q, localstorage, appUtils, swangular) {
+app.service('apiService', function ($window, $http, $q, localstorage, appUtils, messageBox) {
     var apiService = {};
 
     var prepareAuthHeaders = function () {
@@ -285,11 +289,11 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
     var error = function (result) {
         if (result && result.status === 401) {
             localstorage.removeItem("token");
-            appUtils.redirect('/?needlogin=1&redirecturl=' + $window.location.pathname);
+            appUtils.redirect('/?needlogin=1&redirecturl=' + appUtils.encodeUrl($window.location.pathname));
             return $q.resolve(null);
         } else {
-            if (result && result.data && result.data.message) swangular.alert(result.data.data, { type: 'error', title: result.data.message});
-            else swangular.alert("Something went wrong!!", { type: 'error', title: "Error" });
+            if (result && result.data && result.data.message) messageBox.showError("Error", result.data.message, result.data.data.toString());
+            else messageBox.showError("Error", "Something went wrong!!", "Some error occured while processing your request!!");
             return $q.reject(result);
         }
     };
@@ -305,6 +309,7 @@ app.factory("login", function ($uibModal, localstorage, appUtils) {
             windowClass: "center-modal transparent-modal",
             keyboard: true,
             backdrop: 'static',
+            size: 'lg',
             controller: function ($scope, apiService, $uibModalInstance, localstorage, $window) {
                 var vm = $scope;
 
@@ -417,5 +422,105 @@ app.factory("localstorage", function ($window) {
         if (!x) return "";
         return x;
     };
+    return obj;
+});
+
+app.factory("messageBox", function ($uibModal) {
+    var obj = {};
+    obj.showInfo = function (title, message, submessage, callback) {
+        if (typeof callback === "undefined") callback = function () {
+            return;
+        };
+
+        var config = {
+            title: title,
+            text: message,
+            subText: submessage,
+            icon: "info",
+            isOk: true,
+            okCallback: callback
+        };
+        open(config);
+    };
+    obj.showError = function (title, message, submessage, callback) {
+        if (typeof callback === "undefined") callback = function () {
+            return;
+        };
+
+        var config = {
+            title: title,
+            text: message,
+            subText: submessage,
+            icon: "error",
+            isOk: true,
+            okCallback: callback
+        };
+        open(config);
+    };
+    obj.showWarning = function (title, message, submessage, callback) {
+        if (typeof callback === "undefined") callback = function () {
+            return;
+        };
+
+        var config = {
+            title: title,
+            text: message,
+            subText: submessage,
+            icon: "warning",
+            isOk: true,
+            okCallback: callback
+        };
+        open(config);
+    };
+
+    var open = function (config) {
+        var modalInstance = $uibModal.open({
+            templateUrl: '/uitemplates/messagebox.tmpl.html',
+            windowClass: "transparent-modal",
+            keyboard: true,
+            backdrop: 'static',
+            controller: function ($scope, $uibModalInstance) {
+                var vm = $scope;
+                vm.title = config.title;
+                vm.text = config.text;
+                vm.subText = config.subText;
+                vm.icon = config.icon;
+                vm.isOk = config.isOk ? config.isOk : false;
+                vm.isCancel = config.isCancel ? config.isCancel : false;
+                vm.isYes = config.isYes ? config.isYes : false;
+                vm.isNo = config.isNo ? config.isNo : false;
+                vm.isCustomContent = config.isCustomContent ? config.isCustomContent : false;
+                vm.content = config.content;
+
+                vm.onInit = function () {
+                };
+
+                vm.closePopup = function (t) { $uibModalInstance.close(t); };
+
+                vm.onInit();
+            }
+        });
+        modalInstance.result.then(function (res) {
+            if (typeof res !== 'undefined') {
+                switch (res) {
+                    case "ok":
+                        config.okCallback();
+                        break;
+                    case "cancel":
+                        config.cancelCallback();
+                        break;
+                    case "yes":
+                        config.yesCallback();
+                        break;
+                    case "no":
+                        config.noCallback();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    };
+
     return obj;
 });

@@ -1,0 +1,40 @@
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-12 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0 m1-2 float-left">{{title}}</h4>
+                    <span class="close m1-2" ng-click="closePopup()"><i class="fa fa-times-circle"></i></span>
+                </div>
+                <div class="card-body">
+                    <div class="row" ng-if="!isCustomContent">
+                        <div class="col-sm-12">
+                            <div class="text-center mt-0" style="font-size: 6rem; line-height: 6rem; opacity: 0.5;">
+                                <i ng-if="icon=='success'" class="fa fa-check-circle-o text-success" aria-hidden="true"></i>
+                                <i ng-if="icon=='info'" class="fa fa-info-circle-o text-info" aria-hidden="true"></i>
+                                <i ng-if="icon=='error'" class="fa fa-times-circle-o text-danger" aria-hidden="true"></i>
+                                <i ng-if="icon=='warning'" class="fa fa-exclamation-circle-o text-warning" aria-hidden="true"></i>
+                                <i ng-if="icon=='question'" class="fa fa-question-circle-o text-info" aria-hidden="true"></i>
+                            </div>
+                            <br />
+                            <h6 ng-if="text">{{text}}</h6>
+                            <span ng-if="subText">{{subText}}</span>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="isCustomContent">
+                        {{content}}
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button ng-if="isOk" ng-click="closePopup('ok')" type="button" class="btn btn-primary float-right">OK</button>
+                            <button ng-if="isCancel" ng-click="closePopup('cancel')" type="button" class="btn btn-danger float-right">Cancel</button>
+                            <button ng-if="isYes" ng-click="closePopup('yes')" type="button" class="btn btn-success float-right">Yes</button>
+                            <button ng-if="isNo" ng-click="closePopup('no')" type="button" class="btn btn-danger float-right">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

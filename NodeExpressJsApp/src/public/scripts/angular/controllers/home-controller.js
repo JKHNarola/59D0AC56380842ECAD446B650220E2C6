@@ -1,14 +1,4 @@
-app.controller('homeCtrl', function ($scope, apiService) {
+app.controller('homeCtrl', function ($scope) {
     $scope.onInit = function () {
-    };
-
-    $scope.onGet = function () {
-        apiService.get("/api/categories").promise
-            .then(function (r) {
-                console.log(r);
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
     };
 });

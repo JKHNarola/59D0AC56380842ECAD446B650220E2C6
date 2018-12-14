@@ -62,3 +62,10 @@
         height: 100%;
     }
 }
+
+@media (min-width: 1400px) {
+
+    .my-modal-popup .modal-lg {
+        width: 1308px;
+    }
+}

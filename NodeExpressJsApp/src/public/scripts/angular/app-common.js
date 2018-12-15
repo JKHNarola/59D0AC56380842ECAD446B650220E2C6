@@ -622,3 +622,101 @@ app.factory("messageBox", function ($uibModal) {
 
     return obj;
 });
+
+app.factory("snackbar", function () {
+    var show = function (config) {
+        var maindiv = '<div id="snbarea" class="notification-area"></div> ';
+        if (!document.getElementById("snbarea")) {
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = maindiv;
+            document.body.appendChild(wrapper);
+        }
+        var snbid = "snb" + new Date().toString("yyyyMMddhhmmss");
+
+        var i = "";
+        if (typeof config.icon === 'undefined') config.icon = "";
+        switch (config.icon.toString().toLowerCase()) {
+            case "i":
+            case "info":
+            case "information":
+                i = "zmdi-info text-info";
+                break;
+            case "e":
+            case "error":
+            case "err":
+                i = "zmdi-close-circle text-danger";
+                break;
+            case "s":
+            case "success":
+                i = "zmdi-check-circle text-success";
+                break;
+            case "w":
+            case "warn":
+            case "warning":
+                i = "zmdi-alert-circle text-warning";
+                break;
+            default:
+                i = "zmdi-info text-info";
+                break;
+        }
+
+        var removeSnb = 'onclick="document.getElementById(\'' + snbid + '\').remove();"';
+
+        var snb = '<table class="notification" cellspacing="10"> <tr> <td> <i style="font-size: 40px;" class="zmdi ' + i + ' " aria-hidden="true"></i> </td> <td> <span class="message">' + config.message + '</span> </td>';
+        if (config.isClose)
+            snb += '<td align="right" width="0"><div class="btn btn-lnk text-info" ' + removeSnb + '><strong>CLOSE</strong></div></td>';
+        snb += '</tr></table>';
+
+        var d = document.createElement("div");
+        d.id = snbid;
+        d.innerHTML = snb;
+        d.classList.add(['bounceIn']);
+        document.getElementById("snbarea").appendChild(d);
+
+        if (config.timeout) {
+            setTimeout(function () {
+                var f = document.getElementById(snbid);
+                if (f) f.remove();
+            }, config.timeout);
+        }
+    };
+
+    var obj = {};
+    obj.showInfo = function (message, timeout) {
+        var c = {
+            message: message,
+            icon: "info",
+            isClose: true,
+            timeout: timeout
+        };
+        show(c);
+    };
+    obj.showError = function (message, timeout) {
+        var c = {
+            message: message,
+            icon: "err",
+            isClose: true,
+            timeout: timeout
+        };
+        show(c);
+    };
+    obj.showWarning = function (message, timeout) {
+        var c = {
+            message: message,
+            icon: "warn",
+            isClose: true,
+            timeout: timeout
+        };
+        show(c);
+    };
+    obj.showSuccess = function (message, timeout) {
+        var c = {
+            message: message,
+            icon: "success",
+            isClose: true,
+            timeout: timeout
+        };
+        show(c);
+    };
+    return obj;
+});

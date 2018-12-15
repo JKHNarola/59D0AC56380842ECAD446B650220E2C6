@@ -71,7 +71,6 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Content Include="src\public\styles\style.css" />
     <Content Include="src\public\styles\sweetalert2.min.css" />
     <Content Include="src\public\uitemplates\messagebox.tmpl.html" />
-    <Content Include="src\public\uitemplates\snackbar.tmpl.html" />
     <Content Include="src\views\categories.ejs" />
     <Content Include="src\views\home.ejs" />
     <Content Include="src\views\partials\footer.ejs" />

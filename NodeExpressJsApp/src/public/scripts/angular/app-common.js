@@ -631,10 +631,11 @@ app.factory("snackbar", function () {
             wrapper.innerHTML = maindiv;
             document.body.appendChild(wrapper);
         }
-        var snbid = "snb" + new Date().toString("yyyyMMddhhmmss");
+        var d = new Date();
+        var snbid = "snb" + d.getHours().toString() + d.getMinutes().toString() + d.getSeconds().toString() + d.getMilliseconds().toString();
 
         var i = "";
-        if (typeof config.icon === 'undefined') config.icon = "";
+        if (!config.icon) config.icon = "";
         switch (config.icon.toString().toLowerCase()) {
             case "i":
             case "info":
@@ -660,11 +661,11 @@ app.factory("snackbar", function () {
                 break;
         }
 
-        var removeSnb = 'onclick="document.getElementById(\'' + snbid + '\').remove();"';
-
-        var snb = '<table class="notification" cellspacing="10"> <tr> <td> <i style="font-size: 40px;" class="zmdi ' + i + ' " aria-hidden="true"></i> </td> <td> <span class="message">' + config.message + '</span> </td>';
+        var snb = '<table class="notification" cellspacing="10"><tr><td style="width:50px;"><i style="font-size: 40px;" class="zmdi ' + i + ' " aria-hidden="true"></i> </td> <td> <span class="message">' + config.message + '</span> </td>';
+        if (config.isRetry && config.retryCallback)
+            snb += '<td align="right" width="0"><div id="' + snbid + 'retry" class="btn btn-lnk text-warning"><strong>RETRY</strong></div></td>';
         if (config.isClose)
-            snb += '<td align="right" width="0"><div class="btn btn-lnk text-info" ' + removeSnb + '><strong>CLOSE</strong></div></td>';
+            snb += '<td align="right" width="0"><div id="' + snbid + 'close" class="btn btn-lnk text-info"><strong>CLOSE</strong></div></td>';
         snb += '</tr></table>';
 
         var d = document.createElement("div");
@@ -673,49 +674,80 @@ app.factory("snackbar", function () {
         d.classList.add(['bounceIn']);
         document.getElementById("snbarea").appendChild(d);
 
+        var cl = document.getElementById(snbid + "close");
+        if (cl)
+            cl.addEventListener("click", function () {
+                jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
+                if (config.closeCallback) config.closeCallback();
+            });
+
+        var r = document.getElementById(snbid + "retry");
+        if (r)
+            r.addEventListener("click", function () {
+                jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
+                config.retryCallback();
+            });
+
+
         if (config.timeout) {
             setTimeout(function () {
                 var f = document.getElementById(snbid);
-                if (f) f.remove();
+                if (f) jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
             }, config.timeout);
         }
     };
 
     var obj = {};
-    obj.showInfo = function (message, timeout) {
+    obj.showInfo = function (message, timeout, displayClose, closeCallback, retryCallback) {
         var c = {
             message: message,
             icon: "info",
-            isClose: true,
-            timeout: timeout
+            isClose: displayClose,
+            timeout: timeout,
+            closeCallback: closeCallback,
+            isRetry: retryCallback ? true : false,
+            retryCallback: retryCallback
         };
+        if (!timeout) c.isClose = true;
         show(c);
     };
-    obj.showError = function (message, timeout) {
+    obj.showError = function (message, timeout, displayClose, closeCallback, retryCallback) {
         var c = {
             message: message,
             icon: "err",
-            isClose: true,
-            timeout: timeout
+            isClose: displayClose,
+            timeout: timeout,
+            closeCallback: closeCallback,
+            isRetry: retryCallback ? true : false,
+            retryCallback: retryCallback
         };
+        if (!timeout) c.isClose = true;
         show(c);
     };
-    obj.showWarning = function (message, timeout) {
+    obj.showWarning = function (message, timeout, displayClose, closeCallback, retryCallback) {
         var c = {
             message: message,
             icon: "warn",
-            isClose: true,
-            timeout: timeout
+            isClose: displayClose,
+            timeout: timeout,
+            closeCallback: closeCallback,
+            isRetry: retryCallback ? true : false,
+            retryCallback: retryCallback
         };
+        if (!timeout) c.isClose = true;
         show(c);
     };
-    obj.showSuccess = function (message, timeout) {
+    obj.showSuccess = function (message, timeout, displayClose, closeCallback, retryCallback) {
         var c = {
             message: message,
             icon: "success",
-            isClose: true,
-            timeout: timeout
+            isClose: displayClose,
+            timeout: timeout,
+            closeCallback: closeCallback,
+            isRetry: retryCallback ? true : false,
+            retryCallback: retryCallback
         };
+        if (!timeout) c.isClose = true;
         show(c);
     };
     return obj;

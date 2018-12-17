@@ -1,5 +1,6 @@
 var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
+//#region factories
 app.factory('appUtils', function () {
     var obj = {};
 
@@ -10,248 +11,11 @@ app.factory('appUtils', function () {
     return obj;
 });
 
-app.directive('numberOnly', function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, element, attr, ngModelCtrl) {
-            function fromUser(text) {
-                if (text) {
-                    var transformedInput = text.replace(/[^0-9]/g, '');
-
-                    if (transformedInput !== text) {
-                        ngModelCtrl.$setViewValue(transformedInput);
-                        ngModelCtrl.$render();
-                    }
-                    return transformedInput;
-                }
-                return undefined;
-            }
-            ngModelCtrl.$parsers.push(fromUser);
-        }
-    };
-});
-
-app.directive('capitalizeFirst', function ($parse) {
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function (scope, element, attr, ngModel) {
-            var capitalize = function (inputValue) {
-                if (inputValue) {
-                    var capitalized = inputValue.charAt(0).toUpperCase() + inputValue.substring(1);
-
-                    if (capitalized !== inputValue) {
-                        ngModel.$setViewValue(capitalized);
-                        ngModel.$render();
-                    }
-                    return capitalized;
-                }
-            };
-
-            var model = $parse(attr.ngModel);
-            ngModel.$parsers.push(capitalize);
-            capitalize(model(scope));
-        }
-    };
-});
-
-app.directive('capitalizeAll', function ($parse) {
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function (scope, element, attr, ngModel) {
-            var capitalize = function (inputValue) {
-                if (inputValue) {
-                    var capitalized = inputValue.replace(/^(.)|\s(.)/g, function (v) {
-                        return v.toUpperCase();
-                    });
-
-                    if (capitalized !== inputValue) {
-                        ngModel.$setViewValue(capitalized);
-                        ngModel.$render();
-                    }
-                    return capitalized;
-                }
-            };
-
-            //Push process function to model
-            //Apply it right now
-            var model = $parse(attr.ngModel);
-            ngModel.$parsers.push(capitalize);
-            capitalize(model(scope));
-        }
-    };
-});
-
-app.directive('restrictInput', function () {
-
-    return {
-        restrict: 'A',
-        link: function (scope, element, attrs) {
-
-            var ele = element[0];
-            var regex = RegExp(attrs.restrictInput);
-            var value = ele.value;
-            ele.addEventListener('keyup', function (e) {
-                if (regex.test(ele.value) || ele.value === '') value = ele.value;
-                else ele.value = value;
-            });
-        }
-    };
-});
-
-app.directive('convertToNumber', function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, element, attrs, ngModel) {
-            ngModel.$parsers.push(function (val) {
-                return val ? parseInt(val, 10) : null;
-            });
-            ngModel.$formatters.push(function (val) {
-                return val ? '' + val : null;
-            });
-        }
-    };
-});
-
-app.filter('propsFilter', function () {
-    return function (items, props) {
-        var out = [];
-
-        if (angular.isArray(items)) {
-            var keys = Object.keys(props);
-
-            items.forEach(function (item) {
-                var itemMatches = false;
-                for (var i = 0; i < keys.length; i++) {
-                    var prop = keys[i];
-                    var text = props[prop];
-                    switch (typeof item[prop]) {
-                        case 'string':
-                            if (item[prop].toString().toLowerCase().indexOf(text.toLowerCase()) !== -1) itemMatches = true;
-                            break;
-                        case 'number':
-                            if (item[prop] === text) itemMatches = true;
-                            break;
-                        default:
-                            if (item[prop] === text) itemMatches = true;
-                            break;
-                    }
-                    if (itemMatches) break;
-                }
-                if (itemMatches) {
-                    out.push(item);
-                }
-            });
-        } else {
-            out = items;
-        }
-        return out;
-    };
-});
-
 app.filter('trusted', ['$sce', function ($sce) {
     return function (text) {
         return $sce.trustAsHtml(text);
     };
 }]);
-
-app.service('apiService', function ($window, $http, $q, localstorage, messageBox) {
-    var apiService = {};
-
-    var prepareAuthHeaders = function () {
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localstorage.getToken()
-        };
-    };
-
-    apiService.post = function (url, data) {
-        var d = angular.copy(data);
-        var p = null;
-        if (!isNullEmptyUndefined(d))
-            p = JSON.stringify(d);
-
-        var canceller = $q.defer();
-        var tconfig = {
-            headers: prepareAuthHeaders(),
-            timeout: canceller.promise
-        };
-        var promise = $http.post(url, p, tconfig).then(success, error);
-        return {
-            promise: promise,
-            cancel: function (reason) {
-                canceller.resolve(reason);
-            }
-        };
-    };
-
-    apiService.get = function (url, data) {
-        var d = angular.copy(data);
-        var p = "";
-        if (!isNullEmptyUndefined(d))
-            P = '?' + $.param(d);
-
-        var canceller = $q.defer();
-        var tconfig = {
-            headers: prepareAuthHeaders(),
-            timeout: canceller.promise
-        };
-        var promise = $http.get(url + p, tconfig).then(success, error);
-        return {
-            promise: promise,
-            cancel: function (reason) {
-                canceller.resolve(reason);
-            }
-        };
-    };
-
-    apiService.getWithoutAuth = function (url, data) {
-        var d = angular.copy(data);
-        var p = "";
-        if (!isNullEmptyUndefined(d))
-            P = '?' + $.param(d);
-
-        return $http.get(url + p, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(success, error);
-    };
-
-    apiService.postWithoutAuth = function (url, data) {
-        var d = angular.copy(data);
-        var p = null;
-        if (!isNullEmptyUndefined(d))
-            p = JSON.stringify(d);
-
-        return $http.post(url, p, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(success, error);
-    };
-
-    var success = function (result) {
-        if (result && result.data)
-            return angular.fromJson(result.data);
-        return null;
-    };
-
-    var error = function (result) {
-        if (result && result.status === 401) {
-            localstorage.removeItem("token");
-            redirect('/?needlogin=1&redirecturl=' + encodeUrl($window.location.pathname));
-            return $q.resolve(null);
-        } else {
-            if (result && result.data && result.data.message) messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
-            else messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request!!");
-            return $q.reject(result);
-        }
-    };
-
-    return apiService;
-});
 
 app.factory("login", function ($uibModal, localstorage) {
     var obj = {};
@@ -699,3 +463,209 @@ app.factory("snackbar", function () {
     };
     return obj;
 });
+//#endregion factories
+
+//#region services
+app.service('apiService', function ($window, $http, $q, localstorage, messageBox) {
+    var apiService = {};
+
+    var prepareAuthHeaders = function () {
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localstorage.getToken()
+        };
+    };
+
+    apiService.post = function (url, data) {
+        var d = angular.copy(data);
+        var p = null;
+        if (!isNullEmptyUndefined(d))
+            p = JSON.stringify(d);
+
+        var canceller = $q.defer();
+        var tconfig = {
+            headers: prepareAuthHeaders(),
+            timeout: canceller.promise
+        };
+        var promise = $http.post(url, p, tconfig).then(success, error);
+        return {
+            promise: promise,
+            cancel: function (reason) {
+                canceller.resolve(reason);
+            }
+        };
+    };
+
+    apiService.get = function (url, data) {
+        var d = angular.copy(data);
+        var p = "";
+        if (!isNullEmptyUndefined(d))
+            P = '?' + $.param(d);
+
+        var canceller = $q.defer();
+        var tconfig = {
+            headers: prepareAuthHeaders(),
+            timeout: canceller.promise
+        };
+        var promise = $http.get(url + p, tconfig).then(success, error);
+        return {
+            promise: promise,
+            cancel: function (reason) {
+                canceller.resolve(reason);
+            }
+        };
+    };
+
+    apiService.getWithoutAuth = function (url, data) {
+        var d = angular.copy(data);
+        var p = "";
+        if (!isNullEmptyUndefined(d))
+            P = '?' + $.param(d);
+
+        return $http.get(url + p, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(success, error);
+    };
+
+    apiService.postWithoutAuth = function (url, data) {
+        var d = angular.copy(data);
+        var p = null;
+        if (!isNullEmptyUndefined(d))
+            p = JSON.stringify(d);
+
+        return $http.post(url, p, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(success, error);
+    };
+
+    var success = function (result) {
+        if (result && result.data)
+            return angular.fromJson(result.data);
+        return null;
+    };
+
+    var error = function (result) {
+        if (result && result.status === 401) {
+            localstorage.removeItem("token");
+            redirect('/?needlogin=1&redirecturl=' + encodeUrl($window.location.pathname));
+            return $q.resolve(null);
+        } else {
+            if (result && result.data && result.data.message) messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
+            else messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request!!");
+            return $q.reject(result);
+        }
+    };
+
+    return apiService;
+});
+//#endregion
+
+//#region directives
+app.directive('numberOnly', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attr, ngModelCtrl) {
+            function fromUser(text) {
+                if (text) {
+                    var transformedInput = text.replace(/[^0-9]/g, '');
+
+                    if (transformedInput !== text) {
+                        ngModelCtrl.$setViewValue(transformedInput);
+                        ngModelCtrl.$render();
+                    }
+                    return transformedInput;
+                }
+                return undefined;
+            }
+            ngModelCtrl.$parsers.push(fromUser);
+        }
+    };
+});
+
+app.directive('capitalizeFirst', function ($parse) {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, element, attr, ngModel) {
+            var capitalize = function (inputValue) {
+                if (inputValue) {
+                    var capitalized = inputValue.charAt(0).toUpperCase() + inputValue.substring(1);
+
+                    if (capitalized !== inputValue) {
+                        ngModel.$setViewValue(capitalized);
+                        ngModel.$render();
+                    }
+                    return capitalized;
+                }
+            };
+
+            var model = $parse(attr.ngModel);
+            ngModel.$parsers.push(capitalize);
+            capitalize(model(scope));
+        }
+    };
+});
+
+app.directive('capitalizeAll', function ($parse) {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, element, attr, ngModel) {
+            var capitalize = function (inputValue) {
+                if (inputValue) {
+                    var capitalized = inputValue.replace(/^(.)|\s(.)/g, function (v) {
+                        return v.toUpperCase();
+                    });
+
+                    if (capitalized !== inputValue) {
+                        ngModel.$setViewValue(capitalized);
+                        ngModel.$render();
+                    }
+                    return capitalized;
+                }
+            };
+
+            //Push process function to model
+            //Apply it right now
+            var model = $parse(attr.ngModel);
+            ngModel.$parsers.push(capitalize);
+            capitalize(model(scope));
+        }
+    };
+});
+
+app.directive('restrictInput', function () {
+
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+
+            var ele = element[0];
+            var regex = RegExp(attrs.restrictInput);
+            var value = ele.value;
+            ele.addEventListener('keyup', function (e) {
+                if (regex.test(ele.value) || ele.value === '') value = ele.value;
+                else ele.value = value;
+            });
+        }
+    };
+});
+
+app.directive('convertToNumber', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
+            ngModel.$parsers.push(function (val) {
+                return val ? parseInt(val, 10) : null;
+            });
+            ngModel.$formatters.push(function (val) {
+                return val ? '' + val : null;
+            });
+        }
+    };
+});
+//#endregion

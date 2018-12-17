@@ -2,7 +2,7 @@
 <html lang="en" ng-app="app">
 <% include ./partials/head %>
 
-<body ng-cloak>
+<body>
     <% include ./partials/header %>
     <main role="main" class="container" ng-controller="homeCtrl" ng-init="onInit()">
         <div class="page-area">
@@ -16,8 +16,13 @@
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script>
-        app.controller('homeCtrl', function ($scope) {
+        app.controller('homeCtrl', function ($scope, snackbar) {
             $scope.onInit = function () {
+                var loggedOut = getQueryParameterByName("loggedout");
+                if (loggedOut && loggedOut === "1") {
+                    snackbar.showSuccess("You are successfully logged out!!", 3000);
+                    removeQueryFromWindowUrl();
+                }
             };
 
             //$scope.onGet = function () {

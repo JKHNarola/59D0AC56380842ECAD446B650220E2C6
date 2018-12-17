@@ -17,8 +17,7 @@
                             <div class="input-group">
                                 <input type="{{pwdInputType}}" ng-model="loginmodel.password" class="form-control" placeholder="Password">
                                 <div class="input-group-append">
-                                    <button type="button" ng-click="hideShowPassword()"
-                                            class="btn btn-default">
+                                    <button type="button" ng-click="hideShowPassword()" class="btn btn-default">
                                         <i ng-if="pwdInputType=='text'" class="zmdi zmdi-eye-off" aria-hidden="true"></i>
                                         <i ng-if="pwdInputType=='password'" class="zmdi zmdi-eye" aria-hidden="true"></i>
                                     </button>
@@ -27,7 +26,7 @@
                         </div>
                         <div class="form-group">
                             <button ng-disabled="isLoggingIn" ng-click="onLogin()" type="button" class="btn btn-primary float-right">
-                                <span ng-if="isLoggingIn"><i class="zmdi zmdi-spinner zmdi-spin"></i>&nbsp;</span>LOGIN
+                                <span ng-if="isLoggingIn"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>LOGIN
                             </button>
                         </div>
                     </form>

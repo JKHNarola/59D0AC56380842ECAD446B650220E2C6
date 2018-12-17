@@ -57,6 +57,11 @@ var redirect = function (url) {
     window.location.href = url;
 };
 
+var removeQueryFromWindowUrl = function () {
+    var x = window.location.origin + window.location.pathname;
+    window.history.pushState(null, null, x);
+};
+
 var encodeUrl = function (input) {
     return window.encodeURIComponent(input);
 };

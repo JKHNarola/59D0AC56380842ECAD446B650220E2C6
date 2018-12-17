@@ -2,9 +2,9 @@
 <html lang="en" ng-app="app">
 <% include ./partials/head %>
 
-<body ng-cloak>
+<body>
     <% include ./partials/header %>
-    <main role="main" class="container" ng-controller="categoriesCtrl" ng-init="onInit()">
+    <main role="main" class="container" ng-controller="categoriesCtrl" ng-init="onInit()" ng-cloak>
         <div class="page-area">
             <div class="row">
                 <div ng-repeat="t in data" class="col-lg-3 col-md-3 col-sm-6 mb-4">

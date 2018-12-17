@@ -3,7 +3,7 @@
 <% include ./partials/head %>
 
 <body ng-cloak>
-    <% include ./partials/nav %>
+    <% include ./partials/header %>
     <main role="main" class="container" ng-controller="categoriesCtrl" ng-init="onInit()">
         <div class="page-area">
             <div class="row">
@@ -27,7 +27,30 @@
     </main>
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
-    <script src="/scripts/angular/controllers/categories-controller.js"></script>
+    <script>
+        app.controller('categoriesCtrl', function ($scope, apiService) {
+            $scope.data = [];
+            $scope.onInit = function () {
+                $scope.onGet();
+            };
+
+            $scope.onGet = function () {
+                apiService.get("/api/categories").promise
+                    .then(function (r) {
+                        if (r.status === 1) {
+                            r.data.forEach(function (x) {
+                                if (x.picture) x.picture = arrayBufferToBase64Image(x.picture.data);
+                                else x.picture = '/images/no-image-available.png';
+                            });
+                            $scope.data = r.data;
+                        }
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                    });
+            };
+        });
+    </script>
 </body>
 
 </html>

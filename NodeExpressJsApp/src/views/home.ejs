@@ -3,17 +3,26 @@
 <% include ./partials/head %>
 
 <body ng-cloak>
-    <% include ./partials/nav %>
+    <% include ./partials/header %>
     <main role="main" class="container" ng-controller="homeCtrl" ng-init="onInit()">
         <div class="page-area">
             <div class="row">
                 <div class="col-lg-12">
+                    <!--<button type="button" class="btn btn-danger" ng-click="onGet()">Test error snackbar</button>-->
                 </div>
             </div>
         </div>
     </main>
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
-    <script src="/scripts/angular/controllers/home-controller.js"></script>
+    <script>
+        app.controller('homeCtrl', function ($scope) {
+            $scope.onInit = function () {
+            };
+
+            //$scope.onGet = function () {
+            //};
+        });
+    </script>
 </body>
 </html>

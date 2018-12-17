@@ -1,83 +1,12 @@
-var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'swangular']);
+var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
-app.constant('appResources', function () {
-    var obj = {};
-    return obj;
-});
-
-app.factory("appConsts", function (appResources) {
-    return appResources();
-});
-
-app.factory('appUtils', function ($window) {
+app.factory('appUtils', function () {
     var obj = {};
 
-    obj.is$onChanges = function (changes, property) {
+    obj.onChanges = function (changes, property) {
         return changes[property] && changes[property].currentValue && changes[property].currentValue !== changes[property].previousValue;
     };
 
-    obj.isNullEmpty = function (v) {
-        return (v ? v.toString().trim() : "").length === 0;
-    };
-
-    obj.getQueryParameterByName = function (name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, '\\$&');
-        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    };
-
-    obj.arrayBufferToBase64 = function (arrayBuffer) {
-        var base64 = '';
-        var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-        var bytes = new Uint8Array(arrayBuffer);
-        var byteLength = bytes.byteLength;
-        var byteRemainder = byteLength % 3;
-        var mainLength = byteLength - byteRemainder;
-
-        var a, b, c, d;
-        var chunk;
-
-        for (var i = 0; i < mainLength; i = i + 3) {
-            chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
-            a = (chunk & 16515072) >> 18;
-            b = (chunk & 258048) >> 12;
-            c = (chunk & 4032) >> 6;
-            d = chunk & 63;
-            base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
-        }
-
-        if (byteRemainder === 1) {
-            chunk = bytes[mainLength];
-            a = (chunk & 252) >> 2;
-            b = (chunk & 3) << 4;
-            base64 += encodings[a] + encodings[b] + '==';
-        } else if (byteRemainder === 2) {
-            chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
-            a = (chunk & 64512) >> 10;
-            b = (chunk & 1008) >> 4;
-            c = (chunk & 15) << 2;
-            base64 += encodings[a] + encodings[b] + encodings[c] + '=';
-        }
-
-        return base64;
-    };
-
-    obj.arrayBufferToBase64Image = function (arrayBuffer) {
-        return 'data:image/png;base64,' + this.arrayBufferToBase64(arrayBuffer);
-    };
-
-    obj.redirect = function (url) {
-        $window.location.href = url;
-    };
-
-    obj.encodeUrl = function (input) {
-        return $window.encodeURIComponent(input);
-    };
     return obj;
 });
 
@@ -215,7 +144,6 @@ app.filter('propsFilter', function () {
                 }
             });
         } else {
-            // Let the output be the input untouched
             out = items;
         }
         return out;
@@ -228,7 +156,7 @@ app.filter('trusted', ['$sce', function ($sce) {
     };
 }]);
 
-app.service('apiService', function ($window, $http, $q, localstorage, appUtils, messageBox) {
+app.service('apiService', function ($window, $http, $q, localstorage, messageBox) {
     var apiService = {};
 
     var prepareAuthHeaders = function () {
@@ -241,7 +169,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
     apiService.post = function (url, data) {
         var d = angular.copy(data);
         var p = null;
-        if (typeof d !== 'undefined' && d !== null)
+        if (!isNullEmptyUndefined(d))
             p = JSON.stringify(d);
 
         var canceller = $q.defer();
@@ -261,7 +189,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
     apiService.get = function (url, data) {
         var d = angular.copy(data);
         var p = "";
-        if (typeof d !== 'undefined' && d !== null)
+        if (!isNullEmptyUndefined(d))
             P = '?' + $.param(d);
 
         var canceller = $q.defer();
@@ -278,8 +206,26 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
         };
     };
 
-    apiService.getOnly = function (url) {
-        return $http.get(url, {
+    apiService.getWithoutAuth = function (url, data) {
+        var d = angular.copy(data);
+        var p = "";
+        if (!isNullEmptyUndefined(d))
+            P = '?' + $.param(d);
+
+        return $http.get(url + p, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(success, error);
+    };
+
+    apiService.postWithoutAuth = function (url, data) {
+        var d = angular.copy(data);
+        var p = null;
+        if (!isNullEmptyUndefined(d))
+            p = JSON.stringify(d);
+
+        return $http.post(url, p, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -295,7 +241,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
     var error = function (result) {
         if (result && result.status === 401) {
             localstorage.removeItem("token");
-            appUtils.redirect('/?needlogin=1&redirecturl=' + appUtils.encodeUrl($window.location.pathname));
+            redirect('/?needlogin=1&redirecturl=' + encodeUrl($window.location.pathname));
             return $q.resolve(null);
         } else {
             if (result && result.data && result.data.message) messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
@@ -307,7 +253,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, appUtils, 
     return apiService;
 });
 
-app.factory("login", function ($uibModal, localstorage, appUtils) {
+app.factory("login", function ($uibModal, localstorage) {
     var obj = {};
     obj.open = function (redirectUrl) {
         var modalInstance = $uibModal.open({
@@ -351,7 +297,7 @@ app.factory("login", function ($uibModal, localstorage, appUtils) {
                                 localstorage.setItem("token", r.data.token);
                                 localstorage.setItem("user", r.data.user);
                                 if (typeof redirectUrl !== 'undefined' && redirectUrl)
-                                    appUtils.redirect(redirectUrl);
+                                    redirect(redirectUrl);
                                 else
                                     vm.closePopup(true);
                             }
@@ -631,8 +577,8 @@ app.factory("snackbar", function () {
             wrapper.innerHTML = maindiv;
             document.body.appendChild(wrapper);
         }
-        var d = new Date();
-        var snbid = "snb" + d.getHours().toString() + d.getMinutes().toString() + d.getSeconds().toString() + d.getMilliseconds().toString();
+        var dt = new Date();
+        var snbid = "snb" + dt.getHours().toString() + dt.getMinutes().toString() + dt.getSeconds().toString() + dt.getMilliseconds().toString();
 
         var i = "";
         if (!config.icon) config.icon = "";
@@ -674,26 +620,27 @@ app.factory("snackbar", function () {
         d.classList.add(['bounceIn']);
         document.getElementById("snbarea").appendChild(d);
 
+        var close = function () {
+            var f = document.getElementById(snbid);
+            if (f) jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
+            if (config.retryCallback) config.retryCallback = function () { };
+            if (config.closeCallback) config.closeCallback();
+        };
+
+        var closeAndRetry = function () {
+            config.closeCallback = function () { };
+            jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
+            if (config.retryCallback) config.retryCallback();
+        };
+
         var cl = document.getElementById(snbid + "close");
-        if (cl)
-            cl.addEventListener("click", function () {
-                jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
-                if (config.closeCallback) config.closeCallback();
-            });
+        if (cl) cl.addEventListener("click", close);
 
         var r = document.getElementById(snbid + "retry");
-        if (r)
-            r.addEventListener("click", function () {
-                jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
-                config.retryCallback();
-            });
-
+        if (r) r.addEventListener("click", closeAndRetry);
 
         if (config.timeout) {
-            setTimeout(function () {
-                var f = document.getElementById(snbid);
-                if (f) jQuery("#" + snbid).fadeOut("fast", null, function () { $(this).remove(); });
-            }, config.timeout);
+            setTimeout(close, config.timeout);
         }
     };
 

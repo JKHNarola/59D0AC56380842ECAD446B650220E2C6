@@ -1,4 +1,4 @@
-<header>
+<header ng-controller="headerCtrl" ng-init="onInit()" ng-cloak>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
         <div class="container">
             <!-- Brand -->
@@ -9,7 +9,7 @@
                 <span class="nav-item" id="lnkcat">
                     <a class="nav-link" href="/categories">Categories</a>
                 </span>
-                <div ng-controller="loginCtrl" ng-init="onInit()" ng-cloak>
+                <div>
                     <div class="nav-item float-left" id="lnklogin" ng-click="openLogin()">
                         <a class="nav-link">Login</a>
                     </div>

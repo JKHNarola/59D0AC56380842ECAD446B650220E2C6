@@ -17,7 +17,7 @@ app.filter('trusted', ['$sce', function ($sce) {
     };
 }]);
 
-app.factory("login", function ($uibModal, localstorage) {
+app.factory("login", function ($uibModal, localstorage, messageBox) {
     var obj = {};
     obj.open = function (redirectUrl) {
         var modalInstance = $uibModal.open({
@@ -51,7 +51,7 @@ app.factory("login", function ($uibModal, localstorage) {
 
                 vm.onLogin = function () {
                     if (!vm.loginmodel.username || !vm.loginmodel.password) {
-                        window.alert("Please enter Username and Password.");
+                        messageBox.showWarning("Warning", "Please enter Username and Password.");
                         return;
                     }
                     vm.isLoggingIn = true;
@@ -66,7 +66,7 @@ app.factory("login", function ($uibModal, localstorage) {
                                     vm.closePopup(true);
                             }
                             else {
-                                window.alert("Invalid username or password!!");
+                                messageBox.showWarning("Warning", "Invalid Username or Password.");
                             }
 
                             vm.isLoggingIn = false;
@@ -335,9 +335,10 @@ app.factory("messageBox", function ($uibModal) {
 
 app.factory("snackbar", function () {
     var show = function (config) {
-        var maindiv = '<div id="snbarea" class="notification-area"></div> ';
+        var maindiv = '<div id="snbarea" class="col-sm-6 notification-area"></div> ';
         if (!document.getElementById("snbarea")) {
             var wrapper = document.createElement('div');
+            wrapper.classList = ['row'];
             wrapper.innerHTML = maindiv;
             document.body.appendChild(wrapper);
         }
@@ -381,7 +382,7 @@ app.factory("snackbar", function () {
         var d = document.createElement("div");
         d.id = snbid;
         d.innerHTML = snb;
-        d.classList.add(['bounceIn']);
+        d.classList.add(['bounceInLeft']);
         document.getElementById("snbarea").appendChild(d);
 
         var close = function () {
@@ -467,8 +468,6 @@ app.factory("snackbar", function () {
 
 //#region services
 app.service('apiService', function ($window, $http, $q, localstorage, messageBox) {
-    var apiService = {};
-
     var prepareAuthHeaders = function () {
         return {
             'Content-Type': 'application/json',
@@ -476,26 +475,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
         };
     };
 
-    apiService.post = function (url, data) {
-        var d = angular.copy(data);
-        var p = null;
-        if (!isNullEmptyUndefined(d))
-            p = JSON.stringify(d);
-
-        var canceller = $q.defer();
-        var tconfig = {
-            headers: prepareAuthHeaders(),
-            timeout: canceller.promise
-        };
-        var promise = $http.post(url, p, tconfig).then(success, error);
-        return {
-            promise: promise,
-            cancel: function (reason) {
-                canceller.resolve(reason);
-            }
-        };
-    };
-
+    var apiService = {};
     apiService.get = function (url, data) {
         var d = angular.copy(data);
         var p = "";
@@ -503,61 +483,90 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
             P = '?' + $.param(d);
 
         var canceller = $q.defer();
-        var tconfig = {
+        var c = {
             headers: prepareAuthHeaders(),
             timeout: canceller.promise
         };
-        var promise = $http.get(url + p, tconfig).then(success, error);
         return {
-            promise: promise,
+            promise: $http.get(url + p, c).then(onSuccess, onError),
             cancel: function (reason) {
                 canceller.resolve(reason);
             }
         };
     };
+    apiService.post = function (url, data) {
+        var d = angular.copy(data);
+        var p = null;
+        if (!isNullEmptyUndefined(d))
+            p = JSON.stringify(d);
 
+        var canceller = $q.defer();
+        var c = {
+            headers: prepareAuthHeaders(),
+            timeout: canceller.promise
+        };
+        return {
+            promise: $http.post(url, p, c).then(onSuccess, onError),
+            cancel: function (reason) {
+                canceller.resolve(reason);
+            }
+        };
+    };
     apiService.getWithoutAuth = function (url, data) {
         var d = angular.copy(data);
         var p = "";
         if (!isNullEmptyUndefined(d))
             P = '?' + $.param(d);
 
-        return $http.get(url + p, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(success, error);
-    };
+        var canceller = $q.defer();
+        var c = {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: canceller.promise
+        };
 
+        return {
+            promise: $http.get(url + p, c).then(onSuccess, onError),
+            cancel: function (reason) {
+                canceller.resolve(reason);
+            }
+        };
+    };
     apiService.postWithoutAuth = function (url, data) {
         var d = angular.copy(data);
         var p = null;
         if (!isNullEmptyUndefined(d))
             p = JSON.stringify(d);
 
-        return $http.post(url, p, {
-            headers: {
-                'Content-Type': 'application/json'
+        var canceller = $q.defer();
+        var c = {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: canceller.promise
+        };
+        return {
+            promise: $http.post(url, p, c).then(onSuccess, onError),
+            cancel: function (reason) {
+                canceller.resolve(reason);
             }
-        }).then(success, error);
+        };
     };
 
-    var success = function (result) {
+    var onSuccess = function (result) {
         if (result && result.data)
             return angular.fromJson(result.data);
         return null;
     };
-
-    var error = function (result) {
+    var onError = function (result) {
         if (result && result.status === 401) {
             localstorage.removeItem("token");
             redirect('/?needlogin=1&redirecturl=' + encodeUrl($window.location.pathname));
             return $q.resolve(null);
-        } else {
+        } else if (result && result.status === 500) {
             if (result && result.data && result.data.message) messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
             else messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request!!");
-            return $q.reject(result);
+            console.error(result);
+            return $q.resolve(null);
         }
+        return $q.reject(result);
     };
 
     return apiService;

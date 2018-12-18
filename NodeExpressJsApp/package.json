@@ -18,13 +18,16 @@
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
     "camelcase-keys": "^5.0.0",
+    "chalk": "^2.4.1",
     "cors": "^2.8.5",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-ejs-layouts": "^2.5.0",
     "jsonwebtoken": "^8.4.0",
+    "morgan": "^1.9.1",
     "mssql": "^4.3.0",
     "node-windows": "^0.1.14",
+    "password-hash": "^1.2.2",
     "sendmail": "^1.4.1"
   }
 }

@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require("path");
 const sgMail = require('@sendgrid/mail');
+var chalk = require('chalk');
 
 exports.sendMail = function (to, subject, body, isText) {
     sgMail.setApiKey(global.appconfig.emailconfig.sendgridkey);
@@ -14,7 +15,7 @@ exports.sendMail = function (to, subject, body, isText) {
     try {
         sgMail.send(msg);
     } catch (ex) {
-        //No need to handle error
+        console.log(chalk.redBright("Error while sending mail"), chalk.redBright(ex));
     }
 };
 
@@ -29,9 +30,10 @@ exports.sendErrorMail = function (error, req) {
 
 
     try {
-        sgMail.send(msg);
+        //sgMail.send(msg);
     } catch (ex) {
         //No need to handle error
+        console.log(chalk.redBright("Error while sending mail"), chalk.redBright(ex));
     }
 };
 

@@ -2,12 +2,14 @@ var fs = require('fs');
 var path = require("path");
 var express = require('express');
 var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var chalk = require('chalk');
 var routes = require('./route');
 var errorhandlingMiddleware = require('./middlewares/errorhandler');
 var emailService = require("./lib/mailservice");
 
 try {
-    //Set application globals
+    //#region Set application globals
     var configFile = path.join(__dirname, 'appconfig.json');
     if (fs.existsSync(configFile))
         global.appconfig = JSON.parse(fs.readFileSync(configFile).toString().trim());
@@ -31,36 +33,85 @@ try {
         throw new Error("Missing required application configurations!!");
     }
 
+    console.log("");
+    console.log(chalk.cyan("Environment: ") + chalk.cyanBright(global.appconfig.env) + chalk.reset());
+    //#endregion
+
     var app = express();
 
-    //Body parser config for API Post body
+    //#region Console logs for all requests
+    if (global.isDev)
+        app.use(morgan(function (tokens, req, res) {
+            var t;
+            var s = tokens.status(req, res);
+            switch (s) {
+                case "500":
+                    t = chalk.redBright(tokens.status(req, res));
+                    break;
+                case "200":
+                    t = chalk.greenBright(tokens.status(req, res));
+                    break;
+                default:
+                    t = chalk.cyanBright(tokens.status(req, res));
+                    break;
+            }
+
+            var m;
+            var ms = tokens['response-time'](req, res);
+
+            if (ms <= 2000)
+                m = chalk.green(tokens['response-time'](req, res));
+            else if (ms <= 10000)
+                m = chalk.yellow(tokens['response-time'](req, res));
+            else if (ms > 10000)
+                m = chalk.red(tokens['response-time'](req, res));
+
+            var u = tokens.url(req, res);
+            u = chalk.whiteBright(u.length < 50 ? u.padEnd(50, ' ') : u);
+
+            return chalk.whiteBright(tokens.method(req, res))
+                + ' ' + t
+                + ' ' + u
+                + ' ' + m;
+        }));
+    //#endregion
+
+    //#region Body parser config for API Post body
     app.use(bodyParser.urlencoded({
         extended: true
     }));
     app.use(bodyParser.json());
+    //#endregion
 
-    //Viewengine setup
+    //#region Viewengine setup
     app.set('views', path.join(__dirname, '/views'));
     app.set("view engine", "ejs");
+    //#endregion
 
-    //Allow static files
+    //#region Allow static files
     app.use(express.static(__dirname + '/public'));
+    //#endregion
 
-    //Configure routes
+    //#region Configure routes
     routes(app);
+    //#endregion
 
-    //Configure global error handler
+    //#region Configure global error handler
     errorhandlingMiddleware(app);
+    //#endregion
 
-    //Start listening on configured port
+    //#region Start listening on configured port
     var server = app.listen(global.appconfig.port, function () {
-        console.info("Server is listening on port " + server.address().port + "...");
+        console.log(chalk.yellow("Server listening on port: ") + chalk.yellowBright(server.address().port));
+        console.log("");
     });
+    //#endregion
 
 } catch (err) {
-    if (global.isDev)
-        console.error(err.stack);
-    else
-        emailService.sendMail("jkh@narola.email", "DemoAPi error", err.stack, true);
-    return;
+    console.log(chalk.redBright(err.stack));
+    if (err.stack) {
+        var txt = new Date().toString() + "\r\n" + err.stack.toString() + "\r\n\r\n";
+        fs.appendFileSync("logs.txt", txt);
+    }
+    emailService.sendErrorMail("jkh@narola.email", "DemoAPi server init error", err.stack, true);
 }

@@ -8,7 +8,7 @@
         <div class="page-area">
             <div class="row">
                 <div class="col-lg-12">
-                    <!--<button type="button" class="btn btn-danger" ng-click="onGet()">Test error snackbar</button>-->
+                    <button type="button" class="btn btn-danger" ng-click="onGet()">Test error snackbar</button>
                 </div>
             </div>
         </div>
@@ -25,8 +25,9 @@
                 }
             };
 
-            //$scope.onGet = function () {
-            //};
+            $scope.onGet = function () {
+                snackbar.showSuccess("You are successfully logged out!!", null, true);
+            };
         });
     </script>
 </body>

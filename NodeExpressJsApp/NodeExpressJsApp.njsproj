@@ -9,7 +9,8 @@
     <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
     <Environment>env=dev
 tokentimespan=1h
-securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</Environment>
+securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale
+hosturl=http://localhost</Environment>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -37,6 +38,7 @@ securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale</
     <Compile Include="src\controllers\authController.js" />
     <Compile Include="src\controllers\categoryController.js" />
     <Compile Include="src\controllers\pagesController.js" />
+    <Compile Include="src\lib\cryptohelper.js" />
     <Compile Include="src\lib\loginmanager.js" />
     <Compile Include="src\lib\mailservice.js" />
     <Compile Include="src\lib\reqHelper.js" />

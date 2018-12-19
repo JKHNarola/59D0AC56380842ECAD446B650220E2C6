@@ -16,6 +16,7 @@ exports.sendMail = function (to, subject, body, isText) {
         sgMail.send(msg);
     } catch (ex) {
         console.log(chalk.redBright("Error while sending mail"), chalk.redBright(ex));
+        throw ex;
     }
 };
 
@@ -34,6 +35,7 @@ exports.sendErrorMail = function (error, req) {
     } catch (ex) {
         //No need to handle error
         console.log(chalk.redBright("Error while sending mail"), chalk.redBright(ex));
+        throw ex;
     }
 };
 

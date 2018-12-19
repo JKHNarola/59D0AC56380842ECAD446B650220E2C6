@@ -9,6 +9,9 @@ module.exports = function (app) {
     app.route('/')
         .get(homeCtrl.index);
 
+    app.route('/verifyemail')
+        .get(authCtrl.verifyEmailAsync);
+
     app.route('/categories')
         .get(catCtrl.index);
 
@@ -21,6 +24,9 @@ module.exports = function (app) {
     //Routes for apis
     app.route('/api/authenticate')
         .post(authCtrl.authenticateAsync);
+
+    app.route('/api/register')
+        .post(authCtrl.registerAsync);
 
     app.route('/api/logout')
         .get(authCtrl.logout);

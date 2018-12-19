@@ -20,6 +20,7 @@ try {
     if (!global.appconfig.dbconfig) global.appconfig.dbconfig = process.env.dbconfig ? JSON.parse(process.env.dbconfig.toString()) : null;
     if (!global.appconfig.emailconfig) global.appconfig.emailconfig = process.env.emailconfig ? JSON.parse(process.env.emailconfig.toString()) : null;
     if (!global.appconfig.tokentimespan) global.appconfig.tokentimespan = process.env.tokentimespan ? process.env.tokentimespan.toString() : "1h";
+    if (!global.appconfig.hosturl) global.appconfig.hosturl = process.env.hosturl ? process.env.hosturl.toString() : null;
     global.securityKey = process.env.securitykey || null;
 
     global.isDev = global.appconfig.env === "dev";
@@ -29,7 +30,9 @@ try {
         !global.appconfig.dbconfig ||
         !global.appconfig.emailconfig ||
         !global.appconfig.tokentimespan ||
-        !global.securityKey) {
+        !global.appconfig.hosturl ||
+        !global.securityKey
+    ) {
         throw new Error("Missing required application configurations!!");
     }
 
@@ -47,6 +50,10 @@ try {
             switch (s) {
                 case "500":
                     t = chalk.redBright(tokens.status(req, res));
+                    break;
+                case "400":
+                case "404":
+                    t = chalk.yellowBright(tokens.status(req, res));
                     break;
                 case "200":
                     t = chalk.greenBright(tokens.status(req, res));
@@ -66,13 +73,9 @@ try {
             else if (ms > 10000)
                 m = chalk.red(tokens['response-time'](req, res));
 
-            var u = tokens.url(req, res);
-            u = chalk.whiteBright(u.length < 50 ? u.padEnd(50, ' ') : u);
-
-            return chalk.whiteBright(tokens.method(req, res))
-                + ' ' + t
-                + ' ' + u
-                + ' ' + m;
+            var u = chalk.white(tokens.url(req, res));
+            var meth = chalk.whiteBright(tokens.method(req, res)); 
+            return meth + ' ' + t + ' ' + m + ' ' + u;
         }));
     //#endregion
 
@@ -102,7 +105,7 @@ try {
 
     //#region Start listening on configured port
     var server = app.listen(global.appconfig.port, function () {
-        console.log(chalk.yellow("Server listening on port: ") + chalk.yellowBright(server.address().port));
+        console.log(chalk.green("Server listening on: ") + chalk.greenBright('http://localhost:' + server.address().port));
         console.log("");
     });
     //#endregion

@@ -67,3 +67,40 @@ exports.logout = function (req, res, next) {
         next(e);
     }
 };
+
+exports.registerAsync = async function (req, res, next) {
+    try {
+        var u = req.body.username;
+        var p = req.body.password;
+        var f = req.body.fullname;
+        var e = req.body.email;
+        if (!u || !p || !f || !e) {
+            reshelper.sendOtherResult(res, 400, "Required fields not provided.");
+            return;
+        }
+
+        await repo.registerAsync(e, p, u, f);
+
+        reshelper.sendOkResult(res, "User registration successful.", null, 1);
+    }
+    catch (e) {
+        next(e);
+    }
+};
+
+exports.verifyEmailAsync = async function (req, res, next) {
+    try {
+        var e = req.query.email;
+        var c = req.query.code;
+        if (!e || !c) {
+            reshelper.sendOtherResult(res, 400, "Email or Code not provided.");
+            return;
+        }
+
+        await repo.verifyEmailAsync(e, c);
+        reshelper.sendOkResult(res, "Email successfully verified.", null, 1);
+    }
+    catch (e) {
+        next(e);
+    }
+};

@@ -1,19 +1,19 @@
 var authorize = require('./middlewares/authorizejwttoken');
 
 module.exports = function (app) {
-    var homeCtrl = require("./controllers/homeController");
+    var pageCtrl = require("./controllers/pageController");
     var catCtrl = require("./controllers/categoryController");
     var authCtrl = require("./controllers/authController");
 
     //Routes for pages
     app.route('/')
-        .get(homeCtrl.index);
+        .get(pageCtrl.indexPage);
 
     app.route('/signup')
-        .get(homeCtrl.register);
+        .get(pageCtrl.registerPage);
 
     app.route('/verifyemail')
-        .get(authCtrl.verifyEmailAsync);
+        .get(pageCtrl.emailVerificationPage);
 
     app.route('/categories')
         .get(catCtrl.index);
@@ -33,6 +33,9 @@ module.exports = function (app) {
 
     app.route('/api/checkuserexists')
         .post(authCtrl.checkUserExistsAsync);
+
+    app.route('/api/verifyemail')
+        .post(authCtrl.verifyEmailAsync);
 
     app.route('/api/logout')
         .get(authCtrl.logout);

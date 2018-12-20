@@ -37,7 +37,6 @@ hosturl=http://localhost</Environment>
   <ItemGroup>
     <Compile Include="src\controllers\authController.js" />
     <Compile Include="src\controllers\categoryController.js" />
-    <Compile Include="src\controllers\pagesController.js" />
     <Compile Include="src\lib\cryptohelper.js" />
     <Compile Include="src\lib\loginmanager.js" />
     <Compile Include="src\lib\mailservice.js" />
@@ -58,7 +57,7 @@ hosturl=http://localhost</Environment>
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <Content Include="src\appconfig.json" />
-    <Content Include="src\controllers\homeController.js" />
+    <Content Include="src\controllers\pageController.js" />
     <Content Include="src\public\favicon.ico" />
     <Content Include="src\public\images\no-image-available.png" />
     <Content Include="src\public\images\tmpimg.jpg" />
@@ -84,6 +83,7 @@ hosturl=http://localhost</Environment>
     <Content Include="src\views\staticpages\errortemplate.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\views\verifyemail.ejs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />

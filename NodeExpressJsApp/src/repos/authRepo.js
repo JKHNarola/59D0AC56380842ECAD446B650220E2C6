@@ -106,7 +106,7 @@ exports.verifyEmailAsync = async function (email, code) {
             var ures = await pool.request()
                 .input('securityStamp', sql.VarChar, uuidv1())
                 .input('userId', sql.Int, cc[0].userid)
-                .query("UPDATE user set SecurityStamp=@securityStamp, IsEmailConfirmed=1 WHERE UserId=@userId");
+                .query("UPDATE users set SecurityStamp=@securityStamp, IsEmailConfirmed=1 WHERE UserId=@userId");
             if (ures) j = true;
             else j = false;
         }

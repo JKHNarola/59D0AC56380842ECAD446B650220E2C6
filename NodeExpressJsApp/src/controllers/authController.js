@@ -105,8 +105,8 @@ exports.registerAsync = async function (req, res, next) {
 
 exports.verifyEmailAsync = async function (req, res, next) {
     try {
-        var e = req.query.email;
-        var c = req.query.code;
+        var e = req.body.email;
+        var c = req.body.code;
         if (!e || !c) {
             reshelper.sendOtherResult(res, 400, "Email or Code not provided.");
             return;

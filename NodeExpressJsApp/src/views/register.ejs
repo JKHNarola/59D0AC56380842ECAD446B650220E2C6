@@ -46,9 +46,10 @@
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
                                     <strong><label for="passwd" ng-class="{ 'text-danger':regfrm.passwd.$invalid && regfrm.passwd.$touched }">Password:</label></strong>
-                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':regfrm.passwd.$invalid && regfrm.passwd.$touched }" name="passwd" id="passwd" ng-model="user.password" required>
+                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':regfrm.passwd.$invalid && regfrm.passwd.$touched }" name="passwd" id="passwd" ng-model="user.password" required ng-minlength="8" >
                                     <div class="invalid-feedback">
                                         <span ng-if="regfrm.passwd.$error['required']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Password is required!!</strong></span>
+                                        <span ng-if="regfrm.passwd.$error['minlength']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Length must be at least 8 characters!!</strong></span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
@@ -75,7 +76,7 @@
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script>
-        app.controller('registerCtrl', function ($scope, apiService) {
+        app.controller('registerCtrl', function ($scope, apiService, messageBox) {
             $scope.isSigningUp = false;
             $scope.onInit = function () {
             };
@@ -92,7 +93,7 @@
                         }
                     });
                 }
-            }
+            };
 
             $scope.onUsernameChange = function () {
                 $scope.regfrm.username.$setValidity("usernameexists", true);
@@ -106,7 +107,7 @@
                         }
                     });
                 }
-            }
+            };
 
             $scope.onSignUp = function () {
                 $scope.isSigningUp = true;
@@ -114,28 +115,14 @@
                     $scope.isSigningUp = false;
                     console.log(res);
                     if (res && res.status === 1) {
-                        $scope.user = {};
+                        $scope.user = null;
+                        $scope.confpasswd = null;
                         $scope.regfrm.$setPristine();
+                        $scope.regfrm.$setValidity();
+                        $scope.regfrm.$setUntouched();
+                        messageBox.showSuccess("Sign up successful", "You are successfully signed up with up.", "We have sent you an email on your registered email for verifying your email. Please verify your email to activate your account.");
                     }
                 });
-            }
-        });
-        app.directive("compareTo", function () {
-            return {
-                require: "ngModel",
-                scope: {
-                    otherModelValue: "=compareTo"
-                },
-                link: function (scope, element, attributes, ngModel) {
-
-                    ngModel.$validators.compareTo = function (modelValue) {
-                        return modelValue == scope.otherModelValue;
-                    };
-
-                    scope.$watch("otherModelValue", function () {
-                        ngModel.$validate();
-                    });
-                }
             };
         });
     </script>

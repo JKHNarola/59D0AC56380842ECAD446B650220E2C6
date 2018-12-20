@@ -5,3 +5,11 @@ exports.index = function (req, res, next) {
         next(e);
     }
 };
+
+exports.register = function (req, res, next) {
+    try {
+        res.render("register", { pageTitle: "App - Registration" });
+    } catch (e) {
+        next(e);
+    }
+};

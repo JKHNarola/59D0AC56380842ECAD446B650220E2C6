@@ -53,7 +53,7 @@ exports.registerAsync = async function (email, password, username, fullname) {
     try {
         var req = new sql.Request(transaction);
         req.input('username', sql.VarChar, username);
-        req.input('email', sql.VarChar, email);
+        req.input('email', sql.VarChar, email.toLowerCase());
         req.input('password', sql.VarChar, passwordHash.generate(password));
         req.input('fullname', sql.VarChar, fullname);
         req.input('securitystamp', sql.VarChar, sstamp);
@@ -102,6 +102,10 @@ exports.verifyEmailAsync = async function (email, code) {
             ex = Error("Code expired!!");
         else {
             //Update sstamp and isemailconfirmed
+            var ures = await pool.request()
+                .input('securityStamp', sql.VarChar, uuidv1())
+                .query("UPDATE user set SecurityStamp=@securityStamp, IsEmailConfirmed=1 WHERE UserId=@email");
+
         }
     }
     else {

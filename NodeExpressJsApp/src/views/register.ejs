@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<% include ./partials/head %>
+
+<body>
+    <% include ./partials/header %>
+    <main role="main" class="container" ng-controller="registerCtrl" ng-init="onInit()">
+        <div class="page-area">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-10 col-11 mx-auto border border-dark rounded">
+                            <div class="row">
+                                <h4 class="col-lg-12 py-4"><strong>Please fill the from below to signup.</strong></h4>
+                            </div>
+                            <form class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <strong><label for="fullname">Your fullname:</label></strong>
+                                        <input type="text" class="form-control" id="fullname" ng-model="user.fullname">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    <div class="form-group">
+                                        <strong><label for="email">Email address:</label></strong>
+                                        <input type="email" class="form-control" id="email" ng-model="user.email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    <div class="form-group">
+                                        <strong><label for="username">Username:</label></strong>
+                                        <input type="text" class="form-control" id="username" ng-model="user.username">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    <div class="form-group">
+                                        <strong><label for="passwd">Password:</label></strong>
+                                        <input type="password" class="form-control" id="passwd" ng-model="user.passwd">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    <div class="form-group">
+                                        <strong><label for="confpasswd">Confirm password:</label></strong>
+                                        <input type="password" class="form-control" id="confpasswd" ng-model="user.confpasswd">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <button ng-disabled="isSigningUp" ng-click="onRegister()" type="button" class="btn btn-primary float-right">
+                                            <span ng-if="isSigningUp"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>SIGNUP
+                                        </button>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <% include ./partials/footer %>
+    <% include ./partials/scripts %>
+    <script>
+        app.controller('registerCtrl', function ($scope) {
+            $scope.onInit = function () {
+            };
+        });
+    </script>
+</body>
+</html>

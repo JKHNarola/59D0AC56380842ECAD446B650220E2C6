@@ -9,6 +9,9 @@ module.exports = function (app) {
     app.route('/')
         .get(homeCtrl.index);
 
+    app.route('/signup')
+        .get(homeCtrl.register);
+
     app.route('/verifyemail')
         .get(authCtrl.verifyEmailAsync);
 

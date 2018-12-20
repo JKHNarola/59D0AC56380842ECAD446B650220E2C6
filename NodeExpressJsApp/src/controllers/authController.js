@@ -68,6 +68,21 @@ exports.logout = function (req, res, next) {
     }
 };
 
+exports.checkUserExistsAsync = async function (req, res, next) {
+    try {
+        var u = req.body.username;
+        var e = req.body.email;
+        if (u || e) {
+            var isExists = await repo.checkUserExistsAsync(u, e);
+            reshelper.sendOkResult(res, isExists ? "Username/email already exists." : "Username/email not exists.", { isExists: isExists }, 1);
+        }
+        else reshelper.sendOtherResult(res, 400, "Username/email not provided.");
+    }
+    catch (e) {
+        next(e);
+    }
+};
+
 exports.registerAsync = async function (req, res, next) {
     try {
         var u = req.body.username;

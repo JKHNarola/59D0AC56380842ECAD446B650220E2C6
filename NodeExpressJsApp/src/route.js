@@ -31,6 +31,9 @@ module.exports = function (app) {
     app.route('/api/register')
         .post(authCtrl.registerAsync);
 
+    app.route('/api/checkuserexists')
+        .post(authCtrl.checkUserExistsAsync);
+
     app.route('/api/logout')
         .get(authCtrl.logout);
 

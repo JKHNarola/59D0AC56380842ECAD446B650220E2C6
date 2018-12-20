@@ -52,6 +52,29 @@
     background-color: rgba(0,0,0,0);
 }
 
+.box-background {
+    background-color: #f9f9f9;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+    .input-icon-wrapper .loader {
+        position: absolute;
+        right: 10px;
+        top: 7px;
+        font-size: 1.6rem;
+    }
+
+.close-size {
+    font-size: 1.2rem;
+}
+
+.ng-hide.ng-hide-animate {
+    display: none !important;
+}
+
 @media screen and (min-width: 768px) {
     .center-modal.modal:before {
         display: inline-block;
@@ -59,8 +82,4 @@
         content: " ";
         height: 100%;
     }
-}
-
-.close-size {
-    font-size: 1.2rem;
 }

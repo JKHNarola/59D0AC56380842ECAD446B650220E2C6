@@ -91,6 +91,7 @@ exports.verifyEmailAsync = async function (email, code) {
 
     if (ex) throw ex;
 
+    var j = null;
     if (!pool.connected)
         await pool.connect();
     var res = await pool.request()
@@ -98,14 +99,16 @@ exports.verifyEmailAsync = async function (email, code) {
         .query("SELECT * FROM USERS WHERE Email=@email");
     if (res && res.recordsets && res.recordsets[0].length === 1) {
         var cc = camelcase(res.recordsets[0]);
+        if (cc[0].isEmailConfirmed) j = null;
         if (dCode.key !== cc[0].securityStamp && new Date(dCode.expiration) > new Date())
-            ex = Error("Code expired!!");
+            ex = new Error("Code expired!!");
         else {
-            //Update sstamp and isemailconfirmed
             var ures = await pool.request()
                 .input('securityStamp', sql.VarChar, uuidv1())
-                .query("UPDATE user set SecurityStamp=@securityStamp, IsEmailConfirmed=1 WHERE UserId=@email");
-
+                .input('userId', sql.Int, cc[0].userid)
+                .query("UPDATE user set SecurityStamp=@securityStamp, IsEmailConfirmed=1 WHERE UserId=@userId");
+            if (ures) j = true;
+            else j = false;
         }
     }
     else {
@@ -116,4 +119,5 @@ exports.verifyEmailAsync = async function (email, code) {
         await pool.close();
 
     if (ex) throw ex;
+    return j;
 };

@@ -112,8 +112,9 @@ exports.verifyEmailAsync = async function (req, res, next) {
             return;
         }
 
-        await repo.verifyEmailAsync(e, c);
-        reshelper.sendOkResult(res, "Email successfully verified.", null, 1);
+        var x = await repo.verifyEmailAsync(e, c);
+        if (x === null) reshelper.sendOkResult(res, "Email is already verified.", null, 2);
+        else reshelper.sendOkResult(res, "Email successfully verified.", null, 1);
     }
     catch (e) {
         next(e);

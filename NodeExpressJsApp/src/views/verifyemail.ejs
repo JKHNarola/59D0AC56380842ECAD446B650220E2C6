@@ -3,15 +3,15 @@
 <% include ./partials/head %>
 
 <body>
-    <main role="main" class="container" ng-controller="emailVerifyCtrl" ng-init="onInit()">
+    <main role="main" class="container" ng-controller="emailVerifyCtrl" ng-init="onInit()" ng-cloak>
         <div class="page-area">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="row">
                         <div class="col-lg-8 col-md-10 col-11 mx-auto border border-dark rounded shadow-sm box-background">
                             <div class="row">
-                                <h4 ng-if="isVerifying" class="col-lg-12 py-4"><strong>Please wait, we are verifying your email.</strong></h4>
-                                <h4 ng-if="isVerified" class="col-lg-12 py-4"><strong>Congratulations! Your email is successfully verified.</strong></h4>
+                                <h4 class="col-lg-12 pt-4 text-center" ng-bind-html="msg | trusted"></h4>
+                                <a class="col-lg-12 btn btn-link pb-3" href="/">Click here to go to home page</a>
                             </div>
                         </div>
                     </div>
@@ -23,16 +23,20 @@
     <% include ./partials/scripts %>
     <script>
         app.controller('emailVerifyCtrl', function ($scope, apiService) {
+
             $scope.onInit = function () {
                 var email = getQueryParameterByName("email");
                 var code = getQueryParameterByName("code");
-                console.log(email, code);
-                $scope.isVerifying = true;
-                apiService.post("/api/verifyemail", { email: email, code: code }).promise.then(function (r) {
-                    $scope.isVerifying = false;
-                    if (r && r.status === 1) {
-                        $scope.isVerified = true;
-                    }
+
+                $scope.msg = "<strong>Please wait, we are verifying your email...";
+                $scope.isAlreadyVerifying = true;
+                apiService.post("/api/verifyemail", { email: email, code: code }, true).promise.then(function (r) {
+                    if (r && r.status === 1) 
+                        $scope.msg = "<strong class='text-success'>Congratulations! Your email is successfully verified.</strong>";
+                    else if (r && r.status === 2)
+                        $scope.msg = "<strong class='text-success'>Your email is already verified.</strong>";
+                    else
+                        $scope.msg = "<strong class='text-danger'>Couldn't check the status of your email.</strong>";
                 });
             };
         });

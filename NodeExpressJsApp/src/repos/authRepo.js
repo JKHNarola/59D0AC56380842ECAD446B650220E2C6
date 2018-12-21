@@ -12,7 +12,7 @@ exports.authenticateAsync = async function (username, password) {
         await pool.connect();
     var result = await pool.request()
         .input('username', sql.VarChar, username)
-        .query("SELECT * FROM USERS WHERE Username=@username");
+        .query("SELECT * FROM USERS WHERE Username=@username and IsEmailConfirmed=1");
     if (pool.connected)
         await pool.close();
 
@@ -45,7 +45,7 @@ exports.registerAsync = async function (email, password, username, fullname) {
     if (await this.checkUserExistsAsync(username)) throw new Error("Usename or Email is already assigned to another user.");
 
     var transaction = new sql.Transaction(pool);
-    var sstamp = uuidv1();
+    var sstamp = uuidv1().toString();
 
     if (!pool.connected)
         await pool.connect();
@@ -99,21 +99,21 @@ exports.verifyEmailAsync = async function (email, code) {
         .query("SELECT * FROM USERS WHERE Email=@email");
     if (res && res.recordsets && res.recordsets[0].length === 1) {
         var cc = camelcase(res.recordsets[0]);
-        if (cc[0].isEmailConfirmed) j = null;
-        if (dCode.key !== cc[0].securityStamp && new Date(dCode.expiration) > new Date())
+        if (cc[0].isEmailConfirmed)
+            j = null;
+        else if (dCode.key !== cc[0].securityStamp && new Date(dCode.expiration) > new Date())
             ex = new Error("Code expired!!");
         else {
             var ures = await pool.request()
-                .input('securityStamp', sql.VarChar, uuidv1())
-                .input('userId', sql.Int, cc[0].userid)
+                .input('securityStamp', sql.VarChar, uuidv1().toString())
+                .input('userId', sql.Int, cc[0].userId)
                 .query("UPDATE users set SecurityStamp=@securityStamp, IsEmailConfirmed=1 WHERE UserId=@userId");
-            if (ures) j = true;
-            else j = false;
+            if (ures) j = 1;
+            else ex = new Error("Verification failed.");
         }
     }
-    else {
+    else 
         ex = new Error("User is not registered for the provided email.");
-    }
 
     if (pool.connected)
         await pool.close();

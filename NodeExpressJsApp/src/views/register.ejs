@@ -9,55 +9,63 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="row">
-                        <div class="col-lg-8 col-md-10 col-11 mx-auto border border-dark rounded shadow-sm box-background">
+                        <div class="col-lg-6 col-md-8 col-11 mx-auto border border-dark rounded shadow-sm box-background">
                             <div class="row">
-                                <h4 class="col-lg-12 py-4"><strong>Please fill the from below to signup.</strong></h4>
+                                <h4 class="col-lg-12 py-4">Please fill the from below to signup.</h4>
                             </div>
                             <form class="row" name="regfrm">
+                                <div class="col-12 pb-4">
+                                    <label>Profile pic:</label>
+                                    <div class="border border-dark rounded shadow-sm profile-pic-box" ng-click="onPickImage()">
+                                        <i ng-if="!profilePicDataUri" class="zmdi zmdi-camera mx-auto"></i>
+                                        <img ng-if="profilePicDataUri" ng-src="{{ profilePicDataUri }}" />
+                                    </div>
+                                    <input type="file" id="profilepic" onchange="angular.element(this).scope().onPhotoChanged(this)" style="display: none;" accept="image/*" />
+                                </div>
                                 <div class="col-12 form-group">
-                                    <strong><label for="fullname" ng-class="{ 'text-danger':regfrm.fullname.$invalid && regfrm.fullname.$touched }">Your fullname:</label></strong>
+                                    <label for="fullname" ng-class="{ 'text-danger':regfrm.fullname.$invalid && regfrm.fullname.$touched }">Your fullname:</label>
                                     <input type="text" class="form-control" ng-class="{ 'is-invalid':regfrm.fullname.$invalid && regfrm.fullname.$touched }" name="fullname" id="fullname" ng-model="user.fullname" required>
                                     <div class="invalid-feedback">
-                                        <span ng-if="regfrm.fullname.$error['required']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Fullname is required!!</strong></span>
+                                        <span ng-if="regfrm.fullname.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Fullname is required!!</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
-                                    <strong><label for="email" ng-class="{ 'text-danger':regfrm.email.$invalid && regfrm.email.$touched }">Email address:</label></strong>
+                                    <label for="email" ng-class="{ 'text-danger':regfrm.email.$invalid && regfrm.email.$touched }">Email address:</label>
                                     <div class="input-icon-wrapper">
                                         <i ng-show="isCheckingEmail" class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin loader"></i>
                                         <input type="email" class="form-control" ng-class="{'is-invalid':regfrm.email.$invalid && regfrm.email.$touched}" name="email" id="email" ng-model="user.email" ng-blur="onEmailChange(regfrm)" required>
                                         <div class="invalid-feedback">
-                                            <span ng-if="regfrm.email.$error['required']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Email is required!!</strong></span>
-                                            <span ng-if="regfrm.email.$error['email']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Invalid email!!</strong></span>
-                                            <span ng-if="!regfrm.email.$error['required'] && !regfrm.email.$error['email'] && regfrm.email.$error['emailexists']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Someone else is using this email!!</strong></span>
+                                            <span ng-if="regfrm.email.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Email is required!!</span>
+                                            <span ng-if="regfrm.email.$error['email']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Invalid email!!</span>
+                                            <span ng-if="!regfrm.email.$error['required'] && !regfrm.email.$error['email'] && regfrm.email.$error['emailexists']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Someone else is using this email!!</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
-                                    <strong><label for="username" ng-class="{ 'text-danger':regfrm.username.$invalid && regfrm.username.$touched }">Username:</label></strong>
+                                    <label for="username" ng-class="{ 'text-danger':regfrm.username.$invalid && regfrm.username.$touched }">Username:</label>
                                     <div class="input-icon-wrapper">
                                         <i ng-show="isCheckingUsername" class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin loader"></i>
                                         <input type="text" class="form-control" ng-class="{'is-invalid':regfrm.username.$invalid && regfrm.username.$touched}" name="username" id="username" ng-model="user.username" ng-blur="onUsernameChange(regfrm)" required>
                                         <div class="invalid-feedback">
-                                            <span ng-if="regfrm.username.$error['required']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Username is required!!</strong></span>
-                                            <span ng-if="!regfrm.username.$error['required'] && regfrm.username.$error['usernameexists']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Username is already assigned to someone else!!</strong></span>
+                                            <span ng-if="regfrm.username.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Username is required!!</span>
+                                            <span ng-if="!regfrm.username.$error['required'] && regfrm.username.$error['usernameexists']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Username is already assigned to someone else!!</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
-                                    <strong><label for="passwd" ng-class="{ 'text-danger':regfrm.passwd.$invalid && regfrm.passwd.$touched }">Password:</label></strong>
-                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':regfrm.passwd.$invalid && regfrm.passwd.$touched }" name="passwd" id="passwd" ng-model="user.password" required ng-minlength="8" >
+                                    <label for="passwd" ng-class="{ 'text-danger':regfrm.passwd.$invalid && regfrm.passwd.$touched }">Password:</label>
+                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':regfrm.passwd.$invalid && regfrm.passwd.$touched }" name="passwd" id="passwd" ng-model="user.password" required ng-minlength="8">
                                     <div class="invalid-feedback">
-                                        <span ng-if="regfrm.passwd.$error['required']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Password is required!!</strong></span>
-                                        <span ng-if="regfrm.passwd.$error['minlength']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Length must be at least 8 characters!!</strong></span>
+                                        <span ng-if="regfrm.passwd.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Password is required!!</span>
+                                        <span ng-if="regfrm.passwd.$error['minlength']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Length must be at least 8 characters!!</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
-                                    <strong><label for="confpasswd" ng-class="{ 'text-danger':regfrm.confpasswd.$invalid && regfrm.confpasswd.$touched }">Confirm password:</label></strong>
+                                    <label for="confpasswd" ng-class="{ 'text-danger':regfrm.confpasswd.$invalid && regfrm.confpasswd.$touched }">Confirm password:</label>
                                     <input type="password" class="form-control" ng-class="{ 'is-invalid':regfrm.confpasswd.$invalid && regfrm.confpasswd.$touched }" name="confpasswd" id="confpasswd" ng-model="confpasswd" required compare-to="user.password">
                                     <div class="invalid-feedback">
-                                        <span ng-if="regfrm.confpasswd.$error['required']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Confirm password is required!!</strong></span>
-                                        <span ng-if="!regfrm.confpasswd.$error['required'] && regfrm.confpasswd.$error['compareTo']"><strong><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Password did not match!!</strong></span>
+                                        <span ng-if="regfrm.confpasswd.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Confirm password is required!!</span>
+                                        <span ng-if="!regfrm.confpasswd.$error['required'] && regfrm.confpasswd.$error['compareTo']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Password did not match!!</span>
                                     </div>
                                 </div>
                                 <div class="col-12 form-group">
@@ -76,7 +84,7 @@
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script>
-        app.controller('registerCtrl', function ($scope, apiService, messageBox) {
+        app.controller('registerCtrl', function ($scope, $window, $timeout, apiService, messageBox) {
             $scope.isSigningUp = false;
             $scope.onInit = function () {
             };
@@ -85,7 +93,7 @@
                 $scope.regfrm.email.$setValidity("emailexists", true);
                 if ($scope.regfrm.email.$valid) {
                     $scope.isCheckingEmail = true;
-                    apiService.post("/api/checkuserexists", { email: $scope.user.email }).promise.then(function (res) {
+                    apiService.post("/api/checkuserexists", { email: $scope.user.email }, true).promise.then(function (res) {
                         $scope.isCheckingEmail = false;
                         if (res && res.status === 1) {
                             var isExists = res.data.isExists.toString() === 'true';
@@ -99,7 +107,7 @@
                 $scope.regfrm.username.$setValidity("usernameexists", true);
                 if ($scope.regfrm.username.$valid) {
                     $scope.isCheckingUsername = true;
-                    apiService.post("/api/checkuserexists", { username: $scope.user.username }).promise.then(function (res) {
+                    apiService.post("/api/checkuserexists", { username: $scope.user.username }, true).promise.then(function (res) {
                         $scope.isCheckingUsername = false;
                         if (res && res.status === 1) {
                             var isExists = res.data.isExists.toString() === 'true';
@@ -111,7 +119,7 @@
 
             $scope.onSignUp = function () {
                 $scope.isSigningUp = true;
-                apiService.post("/api/register", $scope.user).promise.then(function (res) {
+                apiService.post("/api/register", $scope.user, true).promise.then(function (res) {
                     $scope.isSigningUp = false;
                     console.log(res);
                     if (res && res.status === 1) {
@@ -120,9 +128,32 @@
                         $scope.regfrm.$setPristine();
                         $scope.regfrm.$setValidity();
                         $scope.regfrm.$setUntouched();
-                        messageBox.showSuccess("Sign up successful", "You are successfully signed up with up.", "We have sent you an email on your registered email for verifying your email. Please verify your email to activate your account.");
+                        messageBox.showSuccess("Sign up successful", "You are successfully signed up with us.", "We have sent you an email on your registered emailid for verifying your emailid. Please verify your emailid to activate your account.");
                     }
                 });
+            };
+
+            $scope.onPickImage = function () {
+                $("#profilepic").trigger('click');
+            }
+
+            var fileReaderSupported = $window.FileReader != null;
+            $scope.onPhotoChanged = function (element) {
+                if (element.files != null) {
+                    var file = element.files[0];
+                    console.log(file);
+                    if (fileReaderSupported) {
+                        $timeout(function () {
+                            var fileReader = new FileReader();
+                            fileReader.readAsDataURL(file);
+                            fileReader.onload = function (e) {
+                                $timeout(function () {
+                                    $scope.profilePicDataUri = e.target.result;
+                                });
+                            }
+                        });
+                    }
+                }
             };
         });
     </script>

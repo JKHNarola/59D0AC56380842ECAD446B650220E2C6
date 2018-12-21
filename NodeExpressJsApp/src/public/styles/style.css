@@ -3,24 +3,6 @@
     margin-bottom: 55px;
 }
 
-.fade.in {
-    opacity: 1;
-}
-
-.modal.in .modal-dialog {
-    -webkit-transform: translate(0, 0);
-    -o-transform: translate(0, 0);
-    transform: translate(0, 0);
-}
-
-.modal-backdrop .fade .in {
-    opacity: 0.5 !important;
-}
-
-.modal-backdrop.fade {
-    opacity: 0.5 !important;
-}
-
 .nav-item {
     cursor: pointer;
 }
@@ -50,6 +32,7 @@
     -moz-box-shadow: none;
     box-shadow: none;
     background-color: rgba(0,0,0,0);
+    border: 0;
 }
 
 .box-background {
@@ -71,9 +54,43 @@
     font-size: 1.2rem;
 }
 
-.ng-hide.ng-hide-animate {
-    display: none !important;
+.profile-pic-box {
+    height: 100px;
+    width: 100px;
+    cursor: pointer;
+    transition: all ease-out .1s;
 }
+
+    .profile-pic-box:hover {
+        background-color: #e8e8e8;
+        transition: all ease-in .1s;
+    }
+
+    .profile-pic-box img {
+        position: relative; 
+        display: inline-block; 
+        left: 50%; 
+        transform: translate(-50%); 
+        width: 100%;
+        border-radius: 5px;
+    }
+
+    .profile-pic-box i {
+        display: inline-block;
+        font-size: 4rem;
+        line-height: 6.25rem;
+        opacity: .2;
+        height: 100px;
+        width: 100px;
+        text-align: center;
+        vertical-align: bottom;
+    }
+
+
+/*Uncomment if ngAnimate enabled*/
+/*.ng-hide.ng-hide-animate {
+    display: none !important;
+}*/
 
 @media screen and (min-width: 768px) {
     .center-modal.modal:before {

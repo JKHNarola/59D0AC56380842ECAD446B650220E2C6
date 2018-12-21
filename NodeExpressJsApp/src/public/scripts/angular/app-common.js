@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
+var app = angular.module('app', ['ngSanitize', 'ui.bootstrap']);
 
 //#region factories
 app.factory('appUtils', function () {
@@ -11,22 +11,16 @@ app.factory('appUtils', function () {
     return obj;
 });
 
-app.filter('trusted', ['$sce', function ($sce) {
-    return function (text) {
-        return $sce.trustAsHtml(text);
-    };
-}]);
-
 app.factory("login", function ($uibModal, localstorage, messageBox) {
     var obj = {};
     obj.open = function (redirectUrl) {
         var modalInstance = $uibModal.open({
             templateUrl: '/uitemplates/loginmodal.tmpl.html',
-            windowClass: "center-modal transparent-modal",
+            animation: true,
             keyboard: true,
             backdrop: 'static',
             size: 'lg',
-            controller: function ($scope, apiService, $uibModalInstance, localstorage, $window) {
+            controller: function ($scope, apiService, $uibModalInstance, localstorage) {
                 var vm = $scope;
 
                 vm.loginApiUrl = "/api/authenticate";
@@ -78,7 +72,9 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
                 };
 
                 vm.onInit();
-            }
+            },
+            windowClass: 'show center-modal transparent-modal',
+            backdropClass: 'show'
         });
         modalInstance.result.then(function (res) {
             if (res) {
@@ -145,8 +141,10 @@ app.factory("messageBox", function ($uibModal) {
     var open = function (config) {
         var modalInstance = $uibModal.open({
             templateUrl: '/uitemplates/messagebox.tmpl.html',
+            animation: true,
             keyboard: true,
             backdrop: 'static',
+            size: 'sm',
             controller: function ($scope, $uibModalInstance) {
                 var vm = $scope;
                 vm.title = config.title;
@@ -167,7 +165,9 @@ app.factory("messageBox", function ($uibModal) {
                 vm.closePopup = function (t) { $uibModalInstance.close(t); };
 
                 vm.onInit();
-            }
+            },
+            windowClass: 'show',
+            backdropClass: 'show'
         });
         modalInstance.result.then(function (res) {
             if (typeof res !== 'undefined') {
@@ -467,7 +467,7 @@ app.factory("snackbar", function () {
 //#endregion factories
 
 //#region services
-app.service('apiService', function ($window, $http, $q, localstorage, messageBox) {
+app.service('apiService', function ($window, $http, $q, localstorage, messageBox, snackbar) {
     var prepareAuthHeaders = function () {
         return {
             'Content-Type': 'application/json',
@@ -476,17 +476,23 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
     };
 
     var apiService = {};
-    apiService.get = function (url, data) {
+    apiService.get = function (url, data, withoutauth) {
         var d = angular.copy(data);
         var p = "";
         if (!isNullEmptyUndefined(d))
             P = '?' + $.param(d);
 
         var canceller = $q.defer();
-        var c = {
-            headers: prepareAuthHeaders(),
-            timeout: canceller.promise
-        };
+        var c = withoutauth ?
+            {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: canceller.promise
+            }
+            :
+            {
+                headers: prepareAuthHeaders(),
+                timeout: canceller.promise
+            };
         return {
             promise: $http.get(url + p, c).then(onSuccess, onError),
             cancel: function (reason) {
@@ -494,54 +500,23 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
             }
         };
     };
-    apiService.post = function (url, data) {
+    apiService.post = function (url, data, withoutauth) {
         var d = angular.copy(data);
         var p = null;
         if (!isNullEmptyUndefined(d))
             p = JSON.stringify(d);
 
         var canceller = $q.defer();
-        var c = {
-            headers: prepareAuthHeaders(),
-            timeout: canceller.promise
-        };
-        return {
-            promise: $http.post(url, p, c).then(onSuccess, onError),
-            cancel: function (reason) {
-                canceller.resolve(reason);
+        var c = withoutauth ?
+            {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: canceller.promise
             }
-        };
-    };
-    apiService.getWithoutAuth = function (url, data) {
-        var d = angular.copy(data);
-        var p = "";
-        if (!isNullEmptyUndefined(d))
-            P = '?' + $.param(d);
-
-        var canceller = $q.defer();
-        var c = {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: canceller.promise
-        };
-
-        return {
-            promise: $http.get(url + p, c).then(onSuccess, onError),
-            cancel: function (reason) {
-                canceller.resolve(reason);
-            }
-        };
-    };
-    apiService.postWithoutAuth = function (url, data) {
-        var d = angular.copy(data);
-        var p = null;
-        if (!isNullEmptyUndefined(d))
-            p = JSON.stringify(d);
-
-        var canceller = $q.defer();
-        var c = {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: canceller.promise
-        };
+            :
+            {
+                headers: prepareAuthHeaders(),
+                timeout: canceller.promise
+            };
         return {
             promise: $http.post(url, p, c).then(onSuccess, onError),
             cancel: function (reason) {
@@ -556,21 +531,42 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
         return null;
     };
     var onError = function (result) {
-        if (result && result.status === 401) {
-            localstorage.removeItem("token");
-            redirect('/?needlogin=1&redirecturl=' + encodeUrl($window.location.pathname));
-            return $q.resolve(null);
-        } else if (result && result.status === 500) {
-            if (result && result.data && result.data.message) messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
-            else messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request!!");
-            console.error(result);
-            return $q.resolve(null);
+        if (!result)
+            return $q.reject(null);
+
+        switch (result.status) {
+            case 401:
+                localstorage.removeItem("token");
+                redirect('/?needlogin=1&redirecturl=' + encodeUrl($window.location.pathname));
+                break;
+            case 400:
+                if (result.data && result.data.message)
+                    snackbar.showError(result.data.message);
+                else
+                    return $q.reject(result);
+                break;
+            case 500:
+                if (result && result.data && result.data.message)
+                    messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
+                else
+                    messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request. Please try again or contact admin.");
+                break;
+            default:
+                return $q.reject(result);
         }
-        return $q.reject(result);
+        return $q.resolve({ status: -9999, data: null, message: null });
     };
 
     return apiService;
 });
+//#endregion
+
+//#region filters
+app.filter('trusted', ['$sce', function ($sce) {
+    return function (text) {
+        return $sce.trustAsHtml(text);
+    };
+}]);
 //#endregion
 
 //#region directives

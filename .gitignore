@@ -69,4 +69,5 @@ NodeExpressJsApp/.editorconfig
 NodeExpressJsApp/bin/
 NodeExpressJsApp/obj/
 NodeExpressJsApp/logs.txt
+NodeExpressJsApp/src/logs.txt
 .vs

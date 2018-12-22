@@ -67,12 +67,9 @@
     }
 
     .profile-pic-box img {
-        position: relative; 
-        display: inline-block; 
-        left: 50%; 
-        transform: translate(-50%); 
-        width: 100%;
-        border-radius: 5px;
+        height: 98px;
+        width: 98px;
+        border-radius: 2px;
     }
 
     .profile-pic-box i {
@@ -86,6 +83,15 @@
         vertical-align: bottom;
     }
 
+.crop-area {
+    overflow: hidden;
+    height: 350px;
+    width: 450px;
+}
+
+.border-profile-pic {
+    border: 2px solid rgba(255,255,255,.2) !important;
+}
 
 /*Uncomment if ngAnimate enabled*/
 /*.ng-hide.ng-hide-animate {

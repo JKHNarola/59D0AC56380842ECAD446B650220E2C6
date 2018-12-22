@@ -20,7 +20,24 @@ exports.authenticateAsync = async function (username, password) {
     if (res && res.length === 1 && passwordHash.verify(password, res[0].passwordHash)) {
         delete res[0]["passwordHash"];
         delete res[0]["isEmailConfirmed"];
+        delete res[0]["profilePic"];
         return res[0];
+    } else
+        return null;
+};
+
+exports.getProfilePicAsync = async function (userid) {
+    if (!pool.connected)
+        await pool.connect();
+    var result = await pool.request()
+        .input('userid', sql.Int, userid)
+        .query("SELECT ProfilePic FROM USERS WHERE UserId=@userid");
+    if (pool.connected)
+        await pool.close();
+
+    var res = camelcase(result.recordsets[0]);
+    if (res && res.length === 1) {
+        return res[0].profilePic;
     } else
         return null;
 };
@@ -41,7 +58,7 @@ exports.checkUserExistsAsync = async function (username, email) {
     return s;
 };
 
-exports.registerAsync = async function (email, password, username, fullname) {
+exports.registerAsync = async function (email, password, username, fullname, profilePic) {
     if (await this.checkUserExistsAsync(username)) throw new Error("Usename or Email is already assigned to another user.");
 
     var transaction = new sql.Transaction(pool);
@@ -57,7 +74,8 @@ exports.registerAsync = async function (email, password, username, fullname) {
         req.input('password', sql.VarChar, passwordHash.generate(password));
         req.input('fullname', sql.VarChar, fullname);
         req.input('securitystamp', sql.VarChar, sstamp);
-        var result = await req.query("INSERT INTO Users (Username, Fullname, Email, PasswordHash, IsEmailConfirmed, SecurityStamp) VALUES (@username, @fullname ,@email, @password, 0, @securitystamp)");
+        req.input('profilePic', sql.Image, profilePic);
+        var result = await req.query("INSERT INTO Users (Username, Fullname, Email, PasswordHash, IsEmailConfirmed, SecurityStamp, ProfilePic) VALUES (@username, @fullname ,@email, @password, 0, @securitystamp, @profilePic)");
 
         if (result) {
             var d = new Date();
@@ -112,7 +130,7 @@ exports.verifyEmailAsync = async function (email, code) {
             else ex = new Error("Verification failed.");
         }
     }
-    else 
+    else
         ex = new Error("User is not registered for the provided email.");
 
     if (pool.connected)

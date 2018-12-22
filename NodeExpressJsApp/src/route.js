@@ -40,6 +40,9 @@ module.exports = function (app) {
     app.route('/api/logout')
         .get(authCtrl.logout);
 
+    app.route('/api/user/pic')
+        .get(authorize, authCtrl.getProfilePicAsync);
+
     app.route('/api/categories')
         .get(authorize, catCtrl.listAsync);
 

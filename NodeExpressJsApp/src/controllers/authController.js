@@ -3,6 +3,7 @@ const repo = require("../repos/authRepo");
 var jwt = require('jsonwebtoken');
 var loginmanager = require('../lib/loginmanager');
 var reqHelper = require("../lib/reqHelper");
+var utils = require("../lib/utils");
 
 exports.authenticateAsync = async function (req, res, next) {
     try {
@@ -94,7 +95,11 @@ exports.registerAsync = async function (req, res, next) {
             return;
         }
 
-        await repo.registerAsync(e, p, u, f);
+        var pic = null;
+        var base64 = req.body.profilePic;
+        if (base64) pic = new Buffer(base64.replace(/^data:image\/(png|gif|jpeg);base64,/, ''), 'base64');
+
+        await repo.registerAsync(e, p, u, f, pic);
 
         reshelper.sendOkResult(res, "User registration successful.", null, 1);
     }
@@ -115,6 +120,23 @@ exports.verifyEmailAsync = async function (req, res, next) {
         var x = await repo.verifyEmailAsync(e, c);
         if (x === null) reshelper.sendOkResult(res, "Email is already verified.", null, 2);
         else reshelper.sendOkResult(res, "Email successfully verified.", null, 1);
+    }
+    catch (e) {
+        next(e);
+    }
+};
+
+exports.getProfilePicAsync = async function (req, res, next) {
+    try {
+        var user = utils.getUserFromToken(req);
+        var id = user ? user.userId : -1;
+        if (id === -1) {
+            reshelper.sendOtherResult(res, 400, "Userid not provided.");
+            return;
+        }
+
+        var pic = await repo.getProfilePicAsync(id);
+        reshelper.sendOkResult(res, "Profile picture.", pic, 1);
     }
     catch (e) {
         next(e);

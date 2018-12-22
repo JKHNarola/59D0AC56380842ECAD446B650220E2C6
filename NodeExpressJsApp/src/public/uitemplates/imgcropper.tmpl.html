@@ -1,0 +1,14 @@
+<div class="modal-header">
+    <h5 class="modal-title"><b>Crop Image</b></h5>
+    <span class="close m1-2" ng-click="closePopup()"><i class="zmdi zmdi-close close-size"></i></span>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12 crop-area">
+            <ui-cropper image="orgImg" area-type="rectangle" aspect-ratio="1" result-image="croppedImg" result-image-size='{w: 150,h: 150}' init-max-area="true"></ui-cropper>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button ng-click="closePopup(true)" type="button" class="btn btn-success float-right">Crop</button>
+</div>

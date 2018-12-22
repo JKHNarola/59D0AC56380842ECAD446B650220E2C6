@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngSanitize', 'ui.bootstrap']);
+var app = angular.module('app', ['ngSanitize', 'ui.bootstrap', 'uiCropper']);
 
 //#region factories
 app.factory('appUtils', function () {
@@ -19,7 +19,7 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
             animation: true,
             keyboard: true,
             backdrop: 'static',
-            size: 'lg',
+            size: 'sm',
             controller: function ($scope, apiService, $uibModalInstance, localstorage) {
                 var vm = $scope;
 
@@ -30,7 +30,6 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
                     username: "",
                     password: ""
                 };
-
                 vm.hideShowPassword = function () {
                     if (vm.pwdInputType === 'password')
                         vm.pwdInputType = 'text';
@@ -54,10 +53,18 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
                             if (r.status === 1) {
                                 localstorage.setItem("token", r.data.token);
                                 localstorage.setItem("user", r.data.user);
-                                if (typeof redirectUrl !== 'undefined' && redirectUrl)
-                                    redirect(redirectUrl);
-                                else
-                                    vm.closePopup(true);
+                                getProfilePic().then(function (respic) {
+                                    if (respic && respic.status === 1 && respic.data) {
+                                        var u = localstorage.getItem("user");
+                                        u.profilePic = arrayBufferToBase64Image(respic.data.data);
+                                        localstorage.setItem("user", u);
+                                    }
+
+                                    if (redirectUrl)
+                                        redirect(redirectUrl);
+                                    else
+                                        vm.closePopup(true);
+                                });
                             }
                             else {
                                 messageBox.showWarning("Warning", "Invalid Username or Password.");
@@ -71,9 +78,13 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
                         });
                 };
 
+                var getProfilePic = function () {
+                    return apiService.get('/api/user/pic').promise;
+                };
+
                 vm.onInit();
             },
-            windowClass: 'show center-modal transparent-modal',
+            windowClass: 'show transparent-modal',
             backdropClass: 'show'
         });
         modalInstance.result.then(function (res) {
@@ -88,7 +99,8 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
             $('#lnklogin').hide();
             $('#lnkreg').hide();
             $('#lnkuser').show();
-            $('#lnkuserdrop').html(u.fullname);
+            $('#userpic').attr('src', u.profilePic);
+            $('#userfullname').html(u.fullname);
 
             $('#lnkcat').show();
         }
@@ -96,7 +108,8 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
             $('#lnklogin').show();
             $('#lnkreg').show();
             $('#lnkuser').hide();
-            $('#lnkuserdrop').html("");
+            $('#userpic').attr('src', '');
+            $('#userfullname').html('');
 
             $('#lnkcat').hide();
         }
@@ -144,7 +157,7 @@ app.factory("messageBox", function ($uibModal) {
             animation: true,
             keyboard: true,
             backdrop: 'static',
-            size: 'sm',
+            size: 'md',
             controller: function ($scope, $uibModalInstance) {
                 var vm = $scope;
                 vm.title = config.title;

@@ -17,8 +17,8 @@
                                 <div class="col-12 pb-4">
                                     <label>Profile pic:</label>
                                     <div class="border border-dark rounded shadow-sm profile-pic-box" ng-click="onPickImage()">
-                                        <i ng-if="!profilePicDataUri" class="zmdi zmdi-camera mx-auto"></i>
-                                        <img ng-if="profilePicDataUri" ng-src="{{ profilePicDataUri }}" />
+                                        <i ng-if="!user || !user.profilePic" class="zmdi zmdi-camera mx-auto"></i>
+                                        <img ng-if="user && user.profilePic" ng-src="{{ user.profilePic }}" />
                                     </div>
                                     <input type="file" id="profilepic" onchange="angular.element(this).scope().onPhotoChanged(this)" style="display: none;" accept="image/*" />
                                 </div>
@@ -72,6 +72,9 @@
                                     <button ng-disabled="isSigningUp||regfrm.$invalid" ng-click="onSignUp()" type="button" class="btn btn-primary float-right">
                                         <span ng-if="isSigningUp"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>SIGNUP
                                     </button>
+                                    <button ng-disabled="isSigningUp" ng-click="onResetForm()" type="reset" class="btn btn-danger mr-2 float-right">
+                                        RESET
+                                    </button>
                                     <div class="clearfix"></div>
                                 </div>
                             </form>
@@ -84,8 +87,9 @@
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script>
-        app.controller('registerCtrl', function ($scope, $window, $timeout, apiService, messageBox) {
+        app.controller('registerCtrl', function ($scope, $window, $timeout, $uibModal, apiService, messageBox) {
             $scope.isSigningUp = false;
+            $scope.user = {};
             $scope.onInit = function () {
             };
 
@@ -123,36 +127,60 @@
                     $scope.isSigningUp = false;
                     console.log(res);
                     if (res && res.status === 1) {
-                        $scope.user = null;
-                        $scope.confpasswd = null;
-                        $scope.regfrm.$setPristine();
-                        $scope.regfrm.$setValidity();
-                        $scope.regfrm.$setUntouched();
+                        $scope.onResetForm();
                         messageBox.showSuccess("Sign up successful", "You are successfully signed up with us.", "We have sent you an email on your registered emailid for verifying your emailid. Please verify your emailid to activate your account.");
                     }
                 });
             };
 
+            $scope.onResetForm = function () {
+                $scope.user = {};
+                $scope.confpasswd = null;
+            }
+
             $scope.onPickImage = function () {
                 $("#profilepic").trigger('click');
             }
 
-            var fileReaderSupported = $window.FileReader != null;
             $scope.onPhotoChanged = function (element) {
-                if (element.files != null) {
-                    var file = element.files[0];
-                    console.log(file);
-                    if (fileReaderSupported) {
-                        $timeout(function () {
-                            var fileReader = new FileReader();
-                            fileReader.readAsDataURL(file);
-                            fileReader.onload = function (e) {
+                if ($window.FileReader && element && element.files) {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'uitemplates/imgcropper.tmpl.html',
+                        animation: true,
+                        keyboard: true,
+                        backdrop: 'static',
+                        size: 'lg',
+                        controller: function ($scope, $uibModalInstance) {
+                            var vm = $scope;
+                            vm.orgImg = null;
+                            vm.croppedImg = null;
+
+                            vm.onInit = function () {
+                                var file = element.files[0];
                                 $timeout(function () {
-                                    $scope.profilePicDataUri = e.target.result;
+                                    var fileReader = new FileReader();
+                                    fileReader.onload = function (e) {
+                                        $timeout(function () {
+                                            vm.orgImg = e.target.result;
+                                        });
+                                    };
+                                    fileReader.readAsDataURL(file);
                                 });
-                            }
-                        });
-                    }
+                            };
+
+                            vm.closePopup = function (flag) { $uibModalInstance.close(flag ? vm.croppedImg : null); };
+
+                            vm.onInit();
+                        },
+                        windowClass: 'show',
+                        backdropClass: 'show'
+                    });
+
+                    modalInstance.result.then(function (croppedImg) {
+                        if (croppedImg) {
+                            $scope.user.profilePic = croppedImg;
+                        }
+                    });
                 }
             };
         });

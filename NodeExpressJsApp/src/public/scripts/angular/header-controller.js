@@ -1,4 +1,5 @@
 app.controller('headerCtrl', function ($scope, $window, login, apiService, localstorage) {
+    $scope.profilePic = '';
     $scope.activePage = '';
     $scope.onInit = function () {
         login.setNavUi();

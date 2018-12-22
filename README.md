@@ -13,7 +13,7 @@
         "from": "noreply@demoapi.com",
         "sendgridkey": "yoursendgridapikey",
         "errormailto": "emailaddress"
-    },
+    }
 }
 ```
 

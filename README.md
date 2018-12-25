@@ -3,8 +3,6 @@
 ### appconfig.json format
 ```
 {
-    "env": "dev",
-    "port": 2000,
     "dbconfig": {
         "user": "dbusername",
         "password": "dbpassword",
@@ -15,8 +13,7 @@
         "from": "noreply@demoapi.com",
         "sendgridkey": "yoursendgridapikey",
         "errormailto": "emailaddress"
-    },
-    "tokentimespan": "1h"
+    }
 }
 ```
 

@@ -3,7 +3,7 @@ var path = require("path");
 const sgMail = require('@sendgrid/mail');
 var chalk = require('chalk');
 
-exports.sendMail = function (to, subject, body, isText) {
+exports.sendMailAsync = async function (to, subject, body, isText) {
     sgMail.setApiKey(global.appconfig.emailconfig.sendgridkey);
     var msg = {
         to: to,
@@ -13,28 +13,28 @@ exports.sendMail = function (to, subject, body, isText) {
     if (isText) msg.text = body;
     else msg.html = body;
     try {
-        sgMail.send(msg);
+        await sgMail.send(msg);
     } catch (ex) {
-        console.log(chalk.redBright("Error while sending mail"), chalk.redBright(ex));
+        console.log(chalk.redBright("Error while sending mail"));
         throw ex;
     }
 };
 
-exports.sendErrorMail = function (error, req) {
+exports.sendErrorMailAsync = async function (error, req) {
     sgMail.setApiKey(global.appconfig.emailconfig.sendgridkey);
     var msg = {
         to: global.appconfig.emailconfig.errormailto,
         from: global.appconfig.emailconfig.from,
-        subject: "DemoApi error",
+        subject: "App - Error",
         html: prepareErrorBody(error, req, true)
     };
 
 
     try {
-        //sgMail.send(msg);
+        await sgMail.send(msg);
     } catch (ex) {
         //No need to handle error
-        console.log(chalk.redBright("Error while sending mail"), chalk.redBright(ex));
+        console.log(chalk.redBright("Error while sending mail"));
         throw ex;
     }
 };
@@ -46,7 +46,7 @@ exports.generateErrorBody = function (error, req) {
 //TODO code cleanup
 var prepareErrorBody = function (error, req, isForEmail) {
     var str = "";
-    var errorTemplateFile = path.join(__dirname, "..", "views", "staticpages", "errortemplate.html");
+    var errorTemplateFile = path.join(__dirname, "..", "views", "templates", "error.html");
     if (fs.existsSync(errorTemplateFile))
         str = fs.readFileSync(errorTemplateFile).toString();
 

@@ -14,6 +14,14 @@ exports.registerPage = function (req, res, next) {
     }
 };
 
+exports.manageProfileage = function (req, res, next) {
+    try {
+        res.render("manageprofile", { pageTitle: "App - Manage Profile" });
+    } catch (e) {
+        next(e);
+    }
+};
+
 exports.emailVerificationPage = function (req, res, next) {
     try {
         res.render("verifyemail", { pageTitle: "App - Email Verification" });

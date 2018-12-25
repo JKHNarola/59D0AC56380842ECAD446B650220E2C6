@@ -1,11 +1,14 @@
+var path = require("path");
+var fs = require('fs');
 var camelcase = require("camelcase-keys");
 var sql = require("mssql");
-var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
 var passwordHash = require('password-hash');
 const uuidv1 = require('uuid/v1');
 var mailService = require("../lib/mailservice");
 var crypto = require("../lib/cryptohelper");
 const utils = require("../lib/utils");
+
+var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
 
 exports.authenticateAsync = async function (username, password) {
     if (!pool.connected)
@@ -20,6 +23,7 @@ exports.authenticateAsync = async function (username, password) {
     if (res && res.length === 1 && passwordHash.verify(password, res[0].passwordHash)) {
         delete res[0]["passwordHash"];
         delete res[0]["isEmailConfirmed"];
+        delete res[0]["securityStamp"];
         delete res[0]["profilePic"];
         return res[0];
     } else
@@ -79,7 +83,7 @@ exports.registerAsync = async function (email, password, username, fullname, pro
 
         if (result) {
             var d = new Date();
-            var expd = d.setDate(d.getDate() + parseInt(1));
+            var expd = d.setDate(d.getDate() + parseInt(4));
 
             var obj = {
                 type: "verifyemail",
@@ -87,7 +91,16 @@ exports.registerAsync = async function (email, password, username, fullname, pro
                 key: sstamp
             };
             var url = global.appconfig.hosturl + ":" + global.appconfig.port + "/verifyemail?code=" + utils.encode(crypto.encrypt(JSON.stringify(obj)).toString()) + "&email=" + utils.encode(email);
-            mailService.sendMail(email, "Verify Email", "<html><body><a href='" + url + "'>Verify Email</a></body></html>", false);
+            var str = "<html><body><a href='" + url + "'>Verify Email</a></body></html>";
+            var file = path.join(__dirname, "..", "views", "templates", "verifyemail.html");
+            if (fs.existsSync(file)) {
+                str = fs.readFileSync(file).toString();
+                str = utils.replaceAll(str, '[fullname]', fullname);
+                str = utils.replaceAll(str, '[verifyaccounturl]', url);
+                str = utils.replaceAll(str, '[expdatetime]', new Date(expd).toString());
+            }
+
+            await mailService.sendMailAsync(email, "Verify Email", str, false);
         }
         await transaction.commit();
     }
@@ -138,4 +151,58 @@ exports.verifyEmailAsync = async function (email, code) {
 
     if (ex) throw ex;
     return j;
+};
+
+exports.getAsync = async function (id, isRemoveSecurityFields) {
+    if (!pool.connected)
+        await pool.connect();
+    var result = await pool.request()
+        .input('userId', sql.Int, id)
+        .query("SELECT * FROM USERS WHERE UserId=@userId");
+    if (pool.connected)
+        await pool.close();
+
+    var res = camelcase(result.recordsets[0]);
+    if (res && res.length === 1) {
+        if (isRemoveSecurityFields) {
+            delete res[0]["passwordHash"];
+            delete res[0]["isEmailConfirmed"];
+            delete res[0]["securityStamp"];
+        }
+        return res[0];
+    } else
+        return null;
+};
+
+exports.saveAsync = async function (obj, isSaveAll) {
+    var ex;
+    if (!pool.connected)
+        await pool.connect();
+    var u;
+    if (isSaveAll) {
+        u = await pool.request()
+            .input('securityStamp', sql.VarChar, obj.securityStamp)
+            .input('userId', sql.Int, obj.userId)
+            .input('fullname', sql.VarChar, obj.fullname)
+            .input('email', sql.VarChar, obj.email)
+            .input('passwordHash', sql.VarChar, obj.passwordHash)
+            .input('username', sql.VarChar, obj.username)
+            .input('profilePic', sql.Image, obj.profilePic)
+            .input('isEmailConfirmed', sql.Bit, obj.isEmailConfirmed)
+            .query("UPDATE users set SecurityStamp=@securityStamp, IsEmailConfirmed=@isEmailConfirmed, Fullname=@fullname, Username=@username, ProfilePic=@profilePic, Email=@email, PasswordHash=@passwordHash WHERE UserId=@userId");
+        if (!u) ex = new Error("User update failed.");
+    }
+    else {
+        u = await pool.request()
+            .input('userId', sql.Int, obj.userId)
+            .input('fullname', sql.VarChar, obj.fullname)
+            .input('profilePic', sql.Image, obj.profilePic)
+            .query("UPDATE users set Fullname=@fullname, ProfilePic=@profilePic WHERE UserId=@userId");
+        if (!u) ex = new Error("User update failed.");
+    }
+
+    if (pool.connected)
+        await pool.close();
+
+    if (ex) throw ex;
 };

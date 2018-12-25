@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<% include ./partials/head %>
+
+<body>
+    <% include ./partials/header %>
+    <main role="main" class="container" ng-controller="manageProfileCtrl" ng-init="onInit()">
+        <div class="page-area">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-8 col-11 mx-auto border border-dark rounded shadow-sm box-background">
+                            <div class="row">
+                                <h4 class="col-lg-12 py-4">Your profile.</h4>
+                            </div>
+                            <form class="row" name="regfrm">
+                                <div class="col-12 pb-4">
+                                    <label>Profile pic:</label>
+                                    <div class="border border-dark rounded shadow-sm profile-pic-box" ng-click="onPickImage()">
+                                        <i ng-if="!user || !user.profilePic" class="zmdi zmdi-camera mx-auto"></i>
+                                        <img ng-if="user && user.profilePic" ng-src="{{ user.profilePic }}" />
+                                    </div>
+                                    <input type="file" id="profilepic" onchange="angular.element(this).scope().onPhotoChanged(this)" style="display: none;" accept="image/*" />
+                                </div>
+                                <div class="col-12 form-group">
+                                    <label for="fullname" ng-class="{ 'text-danger':regfrm.fullname.$invalid && regfrm.fullname.$touched }">Your fullname:</label>
+                                    <input type="text" class="form-control" ng-class="{ 'is-invalid':regfrm.fullname.$invalid && regfrm.fullname.$touched }" name="fullname" id="fullname" ng-model="user.fullname" required>
+                                    <div class="invalid-feedback">
+                                        <span ng-if="regfrm.fullname.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Fullname is required!!</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12 form-group">
+                                    <label for="email">Email address:</label>
+                                    <div class="input-icon-wrapper">
+                                        <i ng-show="false" class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin loader"></i>
+                                        <input type="email" ng-disabled="true" class="form-control" name="email" id="email" ng-model="user.email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12 form-group">
+                                    <label for="username">Username:</label>
+                                    <div class="input-icon-wrapper">
+                                        <i ng-show="false" class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin loader"></i>
+                                        <input ng-disabled="true" type="text" class="form-control" id="username" ng-model="user.username">
+                                    </div>
+                                </div>
+                                <div class="col-12 form-group">
+                                    <button ng-disabled="isLoading||regfrm.$invalid" ng-click="onSave()" type="button" class="btn btn-primary float-right">
+                                        <span ng-if="isLoading"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>SAVE
+                                    </button>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <% include ./partials/footer %>
+    <% include ./partials/scripts %>
+    <script>
+        app.controller('manageProfileCtrl', function ($scope, $window, $timeout, $uibModal, apiService, snackbar, localstorage, login) {
+            $scope.isSaving = false;
+            $scope.user = {};
+            $scope.onInit = function () {
+                $scope.onGet();
+            };
+
+            $scope.onGet = function () {
+                $scope.isLoading = true;
+                apiService.get("/api/user").promise.then(function (res) {
+                    $scope.isLoading = false;
+                    if (res && res.status === 1) {
+                        $scope.user = res.data;
+                        if ($scope.user.profilePic)
+                            $scope.user.profilePic = arrayBufferToBase64Image($scope.user.profilePic.data);
+                    }
+                });
+            }
+
+            $scope.onSave = function () {
+                $scope.isLoading = true;
+                apiService.post("/api/user", $scope.user).promise.then(function (res) {
+                    $scope.isLoading = false;
+                    if (res && res.status === 1) {
+                        var u = localstorage.getItem('user');
+                        if (u) {
+                            u.fullname = $scope.user.fullname;
+                            u.profilePic = $scope.user.profilePic;
+                        }
+                        localstorage.setItem('user', u);
+                        login.setNavUi();
+                        snackbar.showSuccess("Your profile is successfully saved.", 5000);
+                    }
+                });
+            };
+
+            $scope.onPickImage = function () {
+                $("#profilepic").trigger('click');
+            }
+
+            $scope.onPhotoChanged = function (element) {
+                if ($window.FileReader && element && element.files) {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'uitemplates/imgcropper.tmpl.html',
+                        animation: true,
+                        keyboard: true,
+                        backdrop: 'static',
+                        size: 'lg',
+                        controller: function ($scope, $uibModalInstance) {
+                            var vm = $scope;
+                            vm.orgImg = null;
+                            vm.croppedImg = null;
+
+                            vm.onInit = function () {
+                                var file = element.files[0];
+                                $timeout(function () {
+                                    var fileReader = new FileReader();
+                                    fileReader.onload = function (e) {
+                                        $timeout(function () {
+                                            vm.orgImg = e.target.result;
+                                        });
+                                    };
+                                    fileReader.readAsDataURL(file);
+                                });
+                            };
+
+                            vm.closePopup = function (flag) { $uibModalInstance.close(flag ? vm.croppedImg : null); };
+
+                            vm.onInit();
+                        },
+                        windowClass: 'show',
+                        backdropClass: 'show'
+                    });
+
+                    modalInstance.result.then(function (croppedImg) {
+                        if (croppedImg) {
+                            $scope.user.profilePic = croppedImg;
+                        }
+                    });
+                }
+            };
+        });
+    </script>
+</body>
+</html>

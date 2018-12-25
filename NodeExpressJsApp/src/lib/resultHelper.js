@@ -45,7 +45,6 @@ exports.sendPage = function (res, statuscode, pagename) {
 exports.showErrorPage = function (req, res, error) {
     prepareHeader(res, "html");
     res.statusCode = 500;
-    var s = error.stack ? error.stack : error;
     res.send(emailService.generateErrorBody(error, req));
 };
 

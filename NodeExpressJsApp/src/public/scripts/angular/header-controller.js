@@ -20,6 +20,9 @@ app.controller('headerCtrl', function ($scope, $window, login, apiService, local
         else if (x.startsWith("/signup")) {
             $scope.activePage = "signup";
         }
+        else if (x.startsWith("/manageprofile")) {
+            $scope.activePage = "manageprofile";
+        }
     };
 
     $scope.openLogin = function () {

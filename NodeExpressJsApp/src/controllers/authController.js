@@ -1,9 +1,8 @@
 const reshelper = require('../lib/resultHelper');
-const repo = require("../repos/authRepo");
+const repo = require("../repos/userRepo");
 var jwt = require('jsonwebtoken');
 var loginmanager = require('../lib/loginmanager');
 var reqHelper = require("../lib/reqHelper");
-var utils = require("../lib/utils");
 
 exports.authenticateAsync = async function (req, res, next) {
     try {
@@ -65,80 +64,6 @@ exports.logout = function (req, res, next) {
             reshelper.sendOtherResult(res, 401, "You are not authorized to access. No access token found.");
         }
     } catch (e) {
-        next(e);
-    }
-};
-
-exports.checkUserExistsAsync = async function (req, res, next) {
-    try {
-        var u = req.body.username;
-        var e = req.body.email;
-        if (u || e) {
-            var isExists = await repo.checkUserExistsAsync(u, e);
-            reshelper.sendOkResult(res, isExists ? "Username/email already exists." : "Username/email not exists.", { isExists: isExists }, 1);
-        }
-        else reshelper.sendOtherResult(res, 400, "Username/email not provided.");
-    }
-    catch (e) {
-        next(e);
-    }
-};
-
-exports.registerAsync = async function (req, res, next) {
-    try {
-        var u = req.body.username;
-        var p = req.body.password;
-        var f = req.body.fullname;
-        var e = req.body.email;
-        if (!u || !p || !f || !e) {
-            reshelper.sendOtherResult(res, 400, "Required fields not provided.");
-            return;
-        }
-
-        var pic = null;
-        var base64 = req.body.profilePic;
-        if (base64) pic = new Buffer(base64.replace(/^data:image\/(png|gif|jpeg);base64,/, ''), 'base64');
-
-        await repo.registerAsync(e, p, u, f, pic);
-
-        reshelper.sendOkResult(res, "User registration successful.", null, 1);
-    }
-    catch (e) {
-        next(e);
-    }
-};
-
-exports.verifyEmailAsync = async function (req, res, next) {
-    try {
-        var e = req.body.email;
-        var c = req.body.code;
-        if (!e || !c) {
-            reshelper.sendOtherResult(res, 400, "Email or Code not provided.");
-            return;
-        }
-
-        var x = await repo.verifyEmailAsync(e, c);
-        if (x === null) reshelper.sendOkResult(res, "Email is already verified.", null, 2);
-        else reshelper.sendOkResult(res, "Email successfully verified.", null, 1);
-    }
-    catch (e) {
-        next(e);
-    }
-};
-
-exports.getProfilePicAsync = async function (req, res, next) {
-    try {
-        var user = utils.getUserFromToken(req);
-        var id = user ? user.userId : -1;
-        if (id === -1) {
-            reshelper.sendOtherResult(res, 400, "Userid not provided.");
-            return;
-        }
-
-        var pic = await repo.getProfilePicAsync(id);
-        reshelper.sendOkResult(res, "Profile picture.", pic, 1);
-    }
-    catch (e) {
         next(e);
     }
 };

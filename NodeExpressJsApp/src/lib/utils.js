@@ -31,3 +31,7 @@ exports.getUserFromToken = function (req) {
     if (decoded) return decoded.user;
     return null;
 };
+
+exports.replaceAll = function (input, target, replacement) {
+    return input.split(target).join(replacement);
+}

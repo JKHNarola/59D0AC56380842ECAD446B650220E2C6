@@ -37,6 +37,7 @@ hosturl=http://localhost</Environment>
   <ItemGroup>
     <Compile Include="src\controllers\authController.js" />
     <Compile Include="src\controllers\categoryController.js" />
+    <Compile Include="src\controllers\userController.js" />
     <Compile Include="src\lib\cryptohelper.js" />
     <Compile Include="src\lib\loginmanager.js" />
     <Compile Include="src\lib\mailservice.js" />
@@ -50,7 +51,7 @@ hosturl=http://localhost</Environment>
     <Compile Include="src\public\scripts\date.js" />
     <Compile Include="src\public\scripts\global.js" />
     <Compile Include="src\public\scripts\ui-cropper.js" />
-    <Compile Include="src\repos\authRepo.js" />
+    <Compile Include="src\repos\userRepo.js" />
     <Compile Include="src\repos\categoryRepo.js" />
     <Compile Include="src\route.js" />
     <Compile Include="src\server.js" />
@@ -69,6 +70,7 @@ hosturl=http://localhost</Environment>
     <Content Include="src\public\uitemplates\messagebox.tmpl.html" />
     <Content Include="src\views\categories.ejs" />
     <Content Include="src\views\home.ejs" />
+    <Content Include="src\views\manageprofile.ejs" />
     <Content Include="src\views\partials\footer.ejs" />
     <Content Include="src\views\partials\head.ejs" />
     <Content Include="src\public\uitemplates\loginmodal.tmpl.html">
@@ -79,7 +81,9 @@ hosturl=http://localhost</Environment>
     <Content Include="src\views\register.ejs" />
     <Content Include="src\views\staticpages\404.html" />
     <Content Include="src\views\staticpages\500.html" />
-    <Content Include="src\views\staticpages\errortemplate.html">
+    <Content Include="src\views\templates\verifyemail.html" />
+    <Content Include="src\views\templates\resetpasswd.html" />
+    <Content Include="src\views\templates\error.html">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\views\verifyemail.ejs" />
@@ -99,6 +103,7 @@ hosturl=http://localhost</Environment>
     <Folder Include="src\views\" />
     <Folder Include="src\views\partials\" />
     <Folder Include="src\views\staticpages\" />
+    <Folder Include="src\views\templates\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

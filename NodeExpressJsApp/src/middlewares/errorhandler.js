@@ -17,7 +17,7 @@ module.exports = function (app) {
                 resHelper.sendErrorResult(res, err.message, err.stack);
             } else {
                 resHelper.sendErrorResult(res, err.message);
-                emailService.sendErrorMail(err, req);
+                emailService.sendErrorMailAsync(err, req);
             }
         }
         else {
@@ -29,7 +29,7 @@ module.exports = function (app) {
                     resHelper.showErrorPage(req, res, err);
                 } else {
                     resHelper.sendPage(res, 500, "500.html");
-                    emailService.sendErrorMail(err, req);
+                    emailService.sendErrorMailAsync(err, req);
                 }
             }
         }

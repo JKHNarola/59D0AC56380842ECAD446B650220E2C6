@@ -109,10 +109,10 @@ try {
     //#endregion
 
 } catch (err) {
-    console.log(chalk.redBright(err.stack));
-    if (err.stack) {
+    if (err && err.stack) {
+        console.log(chalk.redBright(err));
         var txt = new Date().toString() + "\r\n" + err.stack.toString() + "\r\n\r\n";
         fs.appendFileSync("logs.txt", txt);
+        emailService.sendErrorMailAsync("jkh@narola.email", "App server init error", err.stack, true);
     }
-    emailService.sendErrorMail("jkh@narola.email", "DemoAPi server init error", err.stack, true);
 }

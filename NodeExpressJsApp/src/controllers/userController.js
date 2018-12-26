@@ -120,3 +120,63 @@ exports.getAsync = async function (req, res, next) {
         next(e);
     }
 };
+
+exports.changePasswordAsync = async function (req, res, next) {
+    try {
+        var user = utils.getUserFromToken(req);
+        var id = user ? user.userId : -1;
+        var np = req.body.newpasswd;
+        var op = req.body.oldpasswd;
+        if (id === -1 || !np || !op) {
+            reshelper.sendOtherResult(res, 400, "Required fields not provided.");
+            return;
+        }
+
+
+        var isSuccess = await repo.changePasswordAsync(id, op, np);
+        if (!isSuccess)
+            reshelper.sendErrorResult(res, "Couldn't change password.");
+        else
+            reshelper.sendOkResult(res, "Your password is successfully changed.", null, 1);
+    }
+    catch (e) {
+        next(e);
+    }
+};
+
+exports.requestForgotPasswordAsync = async function (req, res, next) {
+    try {
+        var email = req.query.email;
+        if (!email) {
+            reshelper.sendOtherResult(res, 400, "Email id not provided.");
+            return;
+        }
+
+        await repo.requestForgotPassword(email);
+        reshelper.sendOkResult(res, "Reset password link successfully to provided email.", null, 1);
+    }
+    catch (e) {
+        next(e);
+    }
+};
+
+exports.resetPasswordAsync = async function (req, res, next) {
+    try {
+        var email = req.body.email;
+        var code = req.body.code;
+        var np = req.body.newpasswd;
+        if (!np) {
+            reshelper.sendOtherResult(res, 400, "New password not provided.");
+            return;
+        }
+
+        var isSuccess = await repo.resetPasswordAsync(email, code, np);
+        if (isSuccess)
+            reshelper.sendOkResult(res, "Password is successfully reset.", null, 1);
+        else
+            reshelper.sendErrorResult(res, "Couldn't reset password.");
+    }
+    catch (e) {
+        next(e);
+    }
+};

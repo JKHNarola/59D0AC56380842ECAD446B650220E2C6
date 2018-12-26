@@ -29,3 +29,11 @@ exports.emailVerificationPage = function (req, res, next) {
         next(e);
     }
 };
+
+exports.resetPasswordPage = function (req, res, next) {
+    try {
+        res.render("resetpassword", { pageTitle: "App - Reset Password" });
+    } catch (e) {
+        next(e);
+    }
+};

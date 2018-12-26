@@ -9,15 +9,21 @@ var crypto = require("../lib/cryptohelper");
 const utils = require("../lib/utils");
 
 var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
-
-exports.authenticateAsync = async function (username, password) {
+var connectPoolAsync = async function () {
     if (!pool.connected)
         await pool.connect();
+};
+var closePoolAsync = async function () {
+    if (pool.connected)
+        await pool.close();
+};
+
+exports.authenticateAsync = async function (username, password) {
+    await connectPoolAsync();
     var result = await pool.request()
         .input('username', sql.VarChar, username)
         .query("SELECT * FROM USERS WHERE Username=@username and IsEmailConfirmed=1");
-    if (pool.connected)
-        await pool.close();
+    await closePoolAsync();
 
     var res = camelcase(result.recordsets[0]);
     if (res && res.length === 1 && passwordHash.verify(password, res[0].passwordHash)) {
@@ -31,13 +37,11 @@ exports.authenticateAsync = async function (username, password) {
 };
 
 exports.getProfilePicAsync = async function (userid) {
-    if (!pool.connected)
-        await pool.connect();
+    await connectPoolAsync();
     var result = await pool.request()
         .input('userid', sql.Int, userid)
         .query("SELECT ProfilePic FROM USERS WHERE UserId=@userid");
-    if (pool.connected)
-        await pool.close();
+    await closePoolAsync();
 
     var res = camelcase(result.recordsets[0]);
     if (res && res.length === 1) {
@@ -47,8 +51,7 @@ exports.getProfilePicAsync = async function (userid) {
 };
 
 exports.checkUserExistsAsync = async function (username, email) {
-    if (!pool.connected)
-        await pool.connect();
+    await connectPoolAsync();
     var res = await pool.request()
         .input('username', sql.VarChar, username)
         .input('email', sql.VarChar, email)
@@ -56,8 +59,7 @@ exports.checkUserExistsAsync = async function (username, email) {
     var s = false;
     s = res && res.recordsets && res.recordsets[0].length === 1;
 
-    if (pool.connected)
-        await pool.close();
+    await closePoolAsync();
 
     return s;
 };
@@ -68,8 +70,7 @@ exports.registerAsync = async function (email, password, username, fullname, pro
     var transaction = new sql.Transaction(pool);
     var sstamp = uuidv1().toString();
 
-    if (!pool.connected)
-        await pool.connect();
+    await connectPoolAsync();
     await transaction.begin();
     try {
         var req = new sql.Request(transaction);
@@ -100,7 +101,7 @@ exports.registerAsync = async function (email, password, username, fullname, pro
                 str = utils.replaceAll(str, '[expdatetime]', new Date(expd).toString());
             }
 
-            await mailService.sendMailAsync(email, "Verify Email", str, false);
+            await mailService.sendMailAsync(email, "App - Verify Email", str, false);
         }
         await transaction.commit();
     }
@@ -109,8 +110,7 @@ exports.registerAsync = async function (email, password, username, fullname, pro
         throw ex;
     }
 
-    if (pool.connected)
-        await pool.close();
+    await closePoolAsync();
 };
 
 exports.verifyEmailAsync = async function (email, code) {
@@ -123,17 +123,16 @@ exports.verifyEmailAsync = async function (email, code) {
     if (ex) throw ex;
 
     var j = null;
-    if (!pool.connected)
-        await pool.connect();
+    await connectPoolAsync();
     var res = await pool.request()
         .input('email', sql.VarChar, email)
         .query("SELECT * FROM USERS WHERE Email=@email");
     if (res && res.recordsets && res.recordsets[0].length === 1) {
         var cc = camelcase(res.recordsets[0]);
         if (cc[0].isEmailConfirmed)
-            j = null;
+            j = 2;
         else if (dCode.key !== cc[0].securityStamp && new Date(dCode.expiration) > new Date())
-            ex = new Error("Code expired!!");
+            ex = new Error("Code expired!!"); //TODO: Delete account for re-register
         else {
             var ures = await pool.request()
                 .input('securityStamp', sql.VarChar, uuidv1().toString())
@@ -144,23 +143,20 @@ exports.verifyEmailAsync = async function (email, code) {
         }
     }
     else
-        ex = new Error("User is not registered for the provided email.");
+        ex = new Error("User is not registered or email is not verified for the provided email.");
 
-    if (pool.connected)
-        await pool.close();
+    await closePoolAsync();
 
     if (ex) throw ex;
     return j;
 };
 
 exports.getAsync = async function (id, isRemoveSecurityFields) {
-    if (!pool.connected)
-        await pool.connect();
+    await connectPoolAsync();
     var result = await pool.request()
         .input('userId', sql.Int, id)
-        .query("SELECT * FROM USERS WHERE UserId=@userId");
-    if (pool.connected)
-        await pool.close();
+        .query("SELECT * FROM USERS WHERE UserId=@userId and IsEmailConfirmed=1");
+    await closePoolAsync();
 
     var res = camelcase(result.recordsets[0]);
     if (res && res.length === 1) {
@@ -176,8 +172,7 @@ exports.getAsync = async function (id, isRemoveSecurityFields) {
 
 exports.saveAsync = async function (obj, isSaveAll) {
     var ex;
-    if (!pool.connected)
-        await pool.connect();
+    await connectPoolAsync();
     var u;
     if (isSaveAll) {
         u = await pool.request()
@@ -201,8 +196,104 @@ exports.saveAsync = async function (obj, isSaveAll) {
         if (!u) ex = new Error("User update failed.");
     }
 
-    if (pool.connected)
-        await pool.close();
+    await closePoolAsync();
 
     if (ex) throw ex;
+};
+
+exports.changePasswordAsync = async function (userid, oldpasswd, newpasswd) {
+    var ex;
+    var r = false;
+    await connectPoolAsync();
+    var result = await pool.request()
+        .input('userId', sql.Int, userid)
+        .query("SELECT * FROM USERS WHERE UserId=@userId and IsEmailConfirmed=1");
+    var res = camelcase(result.recordsets[0]);
+    if (res && res.length === 1) {
+        if (passwordHash.verify(oldpasswd, res[0].passwordHash)) {
+            var u = await pool.request()
+                .input('userId', sql.Int, userid)
+                .input('password', sql.VarChar, passwordHash.generate(newpasswd))
+                .query("UPDATE users set PasswordHash=@password WHERE UserId=@userId");
+            if (u) r = true;
+        }
+    } else
+        ex = new Error("User is not registered or email is not verified for the provided id.");
+
+    await closePoolAsync();
+
+    if (ex) throw ex;
+    return r;
+};
+
+exports.requestForgotPassword = async function (email) {
+    var ex;
+    await connectPoolAsync();
+    var result = await pool.request()
+        .input('email', sql.VarChar, email)
+        .query("SELECT * FROM USERS WHERE Email=@email and IsEmailConfirmed=1");
+    var res = camelcase(result.recordsets[0]);
+    if (res && res.length === 1) {
+        var d = new Date();
+        var expd = d.setDate(d.getDate() + parseInt(2));
+
+        var obj = {
+            type: "resetpassword",
+            expiration: expd,
+            key: res[0].securityStamp
+        };
+        var url = global.appconfig.hosturl + ":" + global.appconfig.port + "/resetpassword?code=" + utils.encode(crypto.encrypt(JSON.stringify(obj)).toString()) + "&email=" + utils.encode(email);
+        var str = "<html><body><a href='" + url + "'>Reset Your Password</a></body></html>";
+        var file = path.join(__dirname, "..", "views", "templates", "resetpasswd.html");
+        if (fs.existsSync(file)) {
+            str = fs.readFileSync(file).toString();
+            str = utils.replaceAll(str, '[fullname]', res[0].fullname);
+            str = utils.replaceAll(str, '[resetpasswordurl]', url);
+            str = utils.replaceAll(str, '[expdatetime]', new Date(expd).toString());
+        }
+
+        await mailService.sendMailAsync(email, "App - Reset Password", str, false);
+    } else
+        ex = new Error("User is not registered or email is not verified for the provided email.");
+
+    await closePoolAsync();
+
+    if (ex) throw ex;
+};
+
+exports.resetPasswordAsync = async function (email, code, newpasswd) {
+    var ex;
+    if (!code) ex = new Error("Code not provided!!");
+
+    var dCode = JSON.parse(crypto.decrypt(code));
+    if (!dCode || dCode.type !== 'resetpassword') ex = new Error("Invalid code!!");
+
+    if (ex) throw ex;
+
+    var j = false;
+    await connectPoolAsync();
+    var res = await pool.request()
+        .input('email', sql.VarChar, email)
+        .query("SELECT * FROM USERS WHERE Email=@email and IsEmailConfirmed=1");
+    if (res && res.recordsets && res.recordsets[0].length === 1) {
+        var cc = camelcase(res.recordsets[0]);
+        if (dCode.key !== cc[0].securityStamp && new Date(dCode.expiration) > new Date())
+            ex = new Error("Code expired!!");
+        else {
+            var ures = await pool.request()
+                .input('securityStamp', sql.VarChar, uuidv1().toString())
+                .input('userId', sql.Int, cc[0].userId)
+                .input('password', sql.VarChar, passwordHash.generate(newpasswd))
+                .query("UPDATE users set SecurityStamp=@securityStamp, PasswordHash=@password WHERE UserId=@userId");
+            if (ures) j = true;
+            else ex = new Error("Reset password failed.");
+        }
+    }
+    else
+        ex = new Error("User is not registered or email is not verified for the provided email.");
+
+    await closePoolAsync();
+
+    if (ex) throw ex;
+    return j;
 };

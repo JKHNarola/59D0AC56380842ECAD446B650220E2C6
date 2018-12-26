@@ -86,6 +86,7 @@ hosturl=http://localhost</Environment>
     <Content Include="src\views\templates\error.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\views\resetpassword.ejs" />
     <Content Include="src\views\verifyemail.ejs" />
   </ItemGroup>
   <ItemGroup>

@@ -28,7 +28,7 @@
                 var email = getQueryParameterByName("email");
                 var code = getQueryParameterByName("code");
 
-                $scope.msg = "<strong>Please wait, we are verifying your email...";
+                $scope.msg = "<strong>Please wait, we are verifying your email...</strong>";
                 $scope.isAlreadyVerifying = true;
                 apiService.post("/api/verifyemail", { email: email, code: code }, true).promise.then(function (r) {
                     if (r && r.status === 1) 

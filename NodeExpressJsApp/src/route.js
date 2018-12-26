@@ -19,6 +19,9 @@ module.exports = function (app) {
     app.route('/verifyemail')
         .get(pageCtrl.emailVerificationPage);
 
+    app.route('/resetpassword')
+        .get(pageCtrl.resetPasswordPage);
+
     app.route('/categories')
         .get(catCtrl.index);
 
@@ -40,6 +43,12 @@ module.exports = function (app) {
         .post(userCtrl.checkUserExistsAsync);
     app.route('/api/verifyemail')
         .post(userCtrl.verifyEmailAsync);
+    app.route('/api/forgotpassword')
+        .get(userCtrl.requestForgotPasswordAsync);
+    app.route('/api/resetpassword')
+        .post(userCtrl.resetPasswordAsync);
+    app.route('/api/changepassword')
+        .post(authorize, userCtrl.changePasswordAsync);
     app.route('/api/user/pic')
         .get(authorize, userCtrl.getProfilePicAsync);
     app.route('/api/user')

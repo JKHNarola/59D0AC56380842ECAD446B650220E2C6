@@ -216,6 +216,7 @@ exports.changePasswordAsync = async function (userid, oldpasswd, newpasswd) {
                 .input('password', sql.VarChar, passwordHash.generate(newpasswd))
                 .query("UPDATE users set PasswordHash=@password WHERE UserId=@userId");
             if (u) r = true;
+            else r = null;
         }
     } else
         ex = new Error("User is not registered or email is not verified for the provided id.");

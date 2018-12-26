@@ -134,10 +134,12 @@ exports.changePasswordAsync = async function (req, res, next) {
 
 
         var isSuccess = await repo.changePasswordAsync(id, op, np);
-        if (!isSuccess)
-            reshelper.sendErrorResult(res, "Couldn't change password.");
-        else
+        if (isSuccess !== null && isSuccess === false)
+            reshelper.sendErrorResult(res, "Your current password didn't matched.");
+        else if (isSuccess)
             reshelper.sendOkResult(res, "Your password is successfully changed.", null, 1);
+        else
+            reshelper.sendErrorResult(res, "Couldn't change your password.");
     }
     catch (e) {
         next(e);

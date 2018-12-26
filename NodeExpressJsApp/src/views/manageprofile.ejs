@@ -7,13 +7,13 @@
     <main role="main" class="container" ng-controller="manageProfileCtrl" ng-init="onInit()">
         <div class="page-area">
             <div class="row">
-                <div class="col-md-6 col-11 mx-auto p-2">
+                <div class="col-md-8 col-11 mx-auto pb-2">
                     <div class="row">
-                        <div class="col-12 border border-dark rounded shadow-sm box-background">
+                        <div class="col-md-11 col-12 border border-dark rounded shadow-sm box-background">
                             <div class="row">
                                 <h4 class="col-12 py-4">Your profile</h4>
                             </div>
-                            <form class="row" name="regfrm">
+                            <form class="row" name="ufrm">
                                 <div class="col-12 pb-4">
                                     <label>Profile pic:</label>
                                     <div class="border border-dark rounded shadow-sm profile-pic-box" ng-click="onPickImage()">
@@ -23,10 +23,10 @@
                                     <input type="file" id="profilepic" onchange="angular.element(this).scope().onPhotoChanged(this)" style="display: none;" accept="image/*" />
                                 </div>
                                 <div class="col-12 form-group">
-                                    <label for="fullname" ng-class="{ 'text-danger':regfrm.fullname.$invalid && regfrm.fullname.$touched }">Your fullname:</label>
-                                    <input type="text" class="form-control" ng-class="{ 'is-invalid':regfrm.fullname.$invalid && regfrm.fullname.$touched }" name="fullname" id="fullname" ng-model="user.fullname" required>
+                                    <label for="fullname" ng-class="{ 'text-danger':ufrm.fullname.$invalid && ufrm.fullname.$touched }">Your fullname:</label>
+                                    <input type="text" class="form-control" ng-class="{ 'is-invalid':ufrm.fullname.$invalid && ufrm.fullname.$touched }" name="fullname" id="fullname" ng-model="user.fullname" required>
                                     <div class="invalid-feedback">
-                                        <span ng-if="regfrm.fullname.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Fullname is required!!</span>
+                                        <span ng-if="ufrm.fullname.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Fullname is required!!</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 form-group">
@@ -44,8 +44,8 @@
                                     </div>
                                 </div>
                                 <div class="col-12 form-group">
-                                    <button ng-disabled="isLoading||regfrm.$invalid" ng-click="onSave()" type="button" class="btn btn-primary float-right">
-                                        <span ng-if="isLoading"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>SAVE
+                                    <button ng-disabled="isSaving||ufrm.$invalid" ng-click="onSave()" type="button" class="btn btn-primary float-right">
+                                        <span ng-if="isSaving"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>SAVE
                                     </button>
                                     <div class="clearfix"></div>
                                 </div>
@@ -53,12 +53,45 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-11 mx-auto p-2">
+                <div class="col-md-4 col-11 mx-auto">
                     <div class="row">
-                        <div class="col-12 border border-dark rounded shadow-sm box-background">
+                        <div class="col-md-11 col-12 border border-dark rounded shadow-sm box-background">
                             <div class="row">
                                 <h4 class="col-12 py-4">Change password</h4>
                             </div>
+                            <form class="row" name="cpfrm">
+                                <div class="col-12 form-group">
+                                    <label for="oldpasswd" ng-class="{ 'text-danger':cpfrm.oldpasswd.$invalid && cpfrm.oldpasswd.$touched }">Current password:</label>
+                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':cpfrm.oldpasswd.$invalid && cpfrm.oldpasswd.$touched }" name="oldpasswd" id="oldpasswd" ng-model="cpmodel.oldpasswd" required>
+                                    <div class="invalid-feedback">
+                                        <span ng-if="cpfrm.oldpasswd.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Current password is required!!</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 form-group">
+                                    <label for="newpasswd" ng-class="{ 'text-danger':cpfrm.newpasswd.$invalid && cpfrm.newpasswd.$touched }">New password:</label>
+                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':cpfrm.newpasswd.$invalid && cpfrm.newpasswd.$touched }" name="newpasswd" id="newpasswd" ng-model="cpmodel.newpasswd" required ng-minlength="8">
+                                    <div class="invalid-feedback">
+                                        <span ng-if="cpfrm.newpasswd.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;New password is required!!</span>
+                                        <span ng-if="cpfrm.newpasswd.$error['minlength']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Length must be at least 8 characters!!</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 form-group">
+                                    <label for="confpasswd" ng-class="{ 'text-danger':cpfrm.confpasswd.$invalid && cpfrm.confpasswd.$touched }">Confirm password:</label>
+                                    <input type="password" class="form-control" ng-class="{ 'is-invalid':cpfrm.confpasswd.$invalid && cpfrm.confpasswd.$touched }" name="confpasswd" id="confpasswd" ng-model="confpasswd" required compare-to="cpmodel.newpasswd">
+                                    <div class="invalid-feedback">
+                                        <span ng-if="cpfrm.confpasswd.$error['required']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Confirm password is required!!</span>
+                                        <span ng-if="!cpfrm.confpasswd.$error['required'] && cpfrm.confpasswd.$error['compareTo']"><i class="zmdi zmdi-alert-triangle"></i>&nbsp;Password did not match!!</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 form-group">
+                                    <button ng-disabled="isChanging||cpfrm.$invalid" ng-click="onChangePasswd()" type="button" class="btn btn-primary float-right">
+                                        <span ng-if="isChanging"><i class="zmdi zmdi-spinner zmdi-rotate-right zmdi-hc-spin"></i>&nbsp;</span>CHANGE
+                                    </button>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </form>
+
                         </div>
                     </div>
                 </div>
@@ -71,6 +104,7 @@
         app.controller('manageProfileCtrl', function ($scope, $window, $timeout, $uibModal, apiService, snackbar, localstorage, login) {
             $scope.isSaving = false;
             $scope.user = {};
+            $scope.cpmodel = {};
             $scope.onInit = function () {
                 $scope.onGet();
             };
@@ -88,9 +122,9 @@
             }
 
             $scope.onSave = function () {
-                $scope.isLoading = true;
+                $scope.isSaving = true;
                 apiService.post("/api/user", $scope.user).promise.then(function (res) {
-                    $scope.isLoading = false;
+                    $scope.isSaving = false;
                     if (res && res.status === 1) {
                         var u = localstorage.getItem('user');
                         if (u) {
@@ -103,6 +137,16 @@
                     }
                 });
             };
+
+            $scope.onChangePasswd = function () {
+                $scope.isChanging = true;
+                apiService.post("/api/changepassword", $scope.cpmodel).promise.then(function (res) {
+                    $scope.isChanging = false;
+                    if (res && res.status === 1) {
+                        snackbar.showSuccess("Your password is successfully changed.", 5000);
+                    }
+                });
+            }
 
             $scope.onPickImage = function () {
                 $("#profilepic").trigger('click');

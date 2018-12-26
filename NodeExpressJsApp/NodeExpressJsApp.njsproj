@@ -46,6 +46,7 @@ hosturl=http://localhost</Environment>
     <Compile Include="src\lib\utils.js" />
     <Compile Include="src\middlewares\authorizejwttoken.js" />
     <Compile Include="src\middlewares\errorhandler.js" />
+    <Compile Include="src\public\scripts\angular-ladda.min.js" />
     <Compile Include="src\public\scripts\angular\app-common.js" />
     <Compile Include="src\public\scripts\angular\header-controller.js" />
     <Compile Include="src\public\scripts\date.js" />

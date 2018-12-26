@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngSanitize', 'ui.bootstrap', 'uiCropper']);
+var app = angular.module('app', ['ngSanitize', 'ui.bootstrap', 'uiCropper', "ladda"]);
 
 //#region factories
 app.factory('appUtils', function () {

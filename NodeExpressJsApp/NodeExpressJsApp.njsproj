@@ -39,6 +39,9 @@ hosturl=http://localhost</Environment>
     <Compile Include="src\controllers\categoryController.js" />
     <Compile Include="src\controllers\userController.js" />
     <Compile Include="src\lib\cryptohelper.js" />
+    <Compile Include="src\lib\logger.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\lib\loginmanager.js" />
     <Compile Include="src\lib\mailservice.js" />
     <Compile Include="src\lib\reqHelper.js" />

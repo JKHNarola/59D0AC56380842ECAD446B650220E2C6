@@ -560,7 +560,7 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
                 break;
             case 500:
                 if (result && result.data && result.data.message)
-                    messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.toString() : "");
+                    messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.split("\n").join("<br />&nbsp;&nbsp;&nbsp;&nbsp;") : "");
                 else
                     messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request. Please try again or contact admin.");
                 break;

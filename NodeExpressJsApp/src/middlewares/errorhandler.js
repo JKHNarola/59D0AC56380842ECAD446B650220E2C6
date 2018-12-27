@@ -13,17 +13,22 @@ module.exports = function (app) {
     app.use(function (err, req, res, next) {
         if (req) {
             logger.logErrorAsync(err, req);
-            emailService.sendErrorMailAsync(err, req);
 
             if (req.path && req.path.startsWith("/api/")) {
                 if (global.isDev) resHelper.sendErrorResult(res, err.message, err.stack);
-                else resHelper.sendErrorResult(res, err.message);
+                else {
+                    emailService.sendErrorMailAsync(err, req);
+                    resHelper.sendErrorResult(res, err.message);
+                }
             }
             else {
                 if (err.status && err.status === 404) resHelper.sendStaticPage(res, 404, "404.html");
                 else {
                     if (global.isDev) resHelper.sendErrorPage(req, res, err);
-                    else resHelper.sendStaticPage(res, 500, "500.html");
+                    else {
+                        emailService.sendErrorMailAsync(err, req);
+                        resHelper.sendStaticPage(res, 500, "500.html");
+                    }
                 }
             }
         }

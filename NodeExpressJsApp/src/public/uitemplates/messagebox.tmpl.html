@@ -14,7 +14,7 @@
             </div>
             <br ng-if="showIcon"/>
             <h5 class="text-center" ng-if="text">{{text}}</h5>
-            <p style="word-break:break-word;" ng-if="subText">{{subText}}</p>
+            <div style="word-break:break-all;" ng-if="subText" ng-bind-html="subText | trusted"></div>
         </div>
     </div>
     <div class="row" ng-if="isCustomContent" ng-bind-html="content | trusted">

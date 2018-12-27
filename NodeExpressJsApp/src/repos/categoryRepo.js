@@ -3,8 +3,8 @@ var sql = require("mssql");
 var pool = new sql.ConnectionPool(global.appconfig.dbconfig);
 
 exports.listAsync = async function () {
-    if (!pool.connected)
-        await pool.connect();
+    //if (!pool.connected)
+    //    await pool.connect();
     var result = await pool.query("SELECT CategoryID, CategoryName, Description, Picture FROM CATEGORIES");
     if (pool.connected)
         await pool.close();

@@ -1,14 +1,22 @@
+var express = require('express');
+var app = express();
+
 var fs = require('fs');
 var path = require("path");
-var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var chalk = require('chalk');
+var useragent = require('express-useragent');
 var routes = require('./route');
 var errorhandlingMiddleware = require('./middlewares/errorhandler');
 var emailService = require("./lib/mailservice");
+var logger = require('./lib/logger');
 
 try {
+    //#region Init Sqlite3 Logger
+    logger.initAsync();
+    //#endregion
+
     //#region Set application globals
     var configFile = path.join(__dirname, 'appconfig.json');
     if (fs.existsSync(configFile))
@@ -40,7 +48,9 @@ try {
     console.log(chalk.cyan("Environment: ") + chalk.cyanBright(global.appconfig.env) + chalk.reset());
     //#endregion
 
-    var app = express();
+    //#region Useragent
+    app.use(useragent.express());
+    //#endregion
 
     //#region Console logs for all requests
     if (global.isDev)
@@ -74,7 +84,7 @@ try {
                 m = chalk.red(tokens['response-time'](req, res));
 
             var u = chalk.white(tokens.url(req, res));
-            var meth = chalk.whiteBright(tokens.method(req, res)); 
+            var meth = chalk.whiteBright(tokens.method(req, res));
             return meth + ' ' + t + ' ' + m + ' ' + u;
         }));
     //#endregion
@@ -102,7 +112,8 @@ try {
     //#endregion
 
     //#region Start listening on configured port
-    var server = app.listen(global.appconfig.port, function () {
+    var server = app.listen(global.appconfig.port, async function () {
+        await logger.logInfoAsync("Server started", { portno: server.address().port });
         console.log(chalk.green("Server listening on: ") + chalk.greenBright('http://localhost:' + server.address().port));
         console.log("");
     });

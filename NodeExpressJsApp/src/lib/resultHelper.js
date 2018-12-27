@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require("path");
-var emailService = require("../lib/mailservice");
+var utils = require("../lib/utils");
 
 exports.sendOkResult = function (res, message, data, status) {
     prepareHeader(res);
@@ -32,7 +32,7 @@ exports.sendOtherResult = function (res, statuscode, message, data, status) {
     res.send(JSON.stringify(x));
 };
 
-exports.sendPage = function (res, statuscode, pagename) {
+exports.sendStaticPage = function (res, statuscode, pagename) {
     prepareHeader(res, "html");
     res.statusCode = statuscode;
     var f = path.join(__dirname, '..', 'views', "staticpages", pagename);
@@ -42,10 +42,10 @@ exports.sendPage = function (res, statuscode, pagename) {
         this.sendOtherResult(res, 500, "View file " + pagename + " not exists.");
 };
 
-exports.showErrorPage = function (req, res, error) {
+exports.sendErrorPage = function (req, res, error) {
     prepareHeader(res, "html");
     res.statusCode = 500;
-    res.send(emailService.generateErrorBody(error, req));
+    res.send(utils.prepareErrorBody(error, req));
 };
 
 var prepareHeader = function (res, contenttype) {

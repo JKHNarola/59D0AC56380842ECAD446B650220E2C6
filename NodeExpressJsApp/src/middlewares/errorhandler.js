@@ -1,6 +1,6 @@
 var resHelper = require("../lib/resultHelper");
 var emailService = require('../lib/mailservice');
-var chalk = require('chalk');
+var logger = require('../lib/logger');
 
 module.exports = function (app) {
     // catch 404 and forward to error handler
@@ -11,25 +11,19 @@ module.exports = function (app) {
     });
 
     app.use(function (err, req, res, next) {
-        if (req && req.path && req.path.startsWith("/api/")) {
-            if (global.isDev) {
-                console.log(chalk.redBright(err.message), chalk.redBright(err.stack));
-                resHelper.sendErrorResult(res, err.message, err.stack);
-            } else {
-                resHelper.sendErrorResult(res, err.message);
-                emailService.sendErrorMailAsync(err, req);
+        if (req) {
+            logger.logErrorAsync(err, req);
+            emailService.sendErrorMailAsync(err, req);
+
+            if (req.path && req.path.startsWith("/api/")) {
+                if (global.isDev) resHelper.sendErrorResult(res, err.message, err.stack);
+                else resHelper.sendErrorResult(res, err.message);
             }
-        }
-        else {
-            if (err && err.status && err.status === 404) {
-                resHelper.sendPage(res, 404, "404.html");
-            } else {
-                if (global.isDev) {
-                    console.log(chalk.redBright(err.message), chalk.redBright(err.stack));
-                    resHelper.showErrorPage(req, res, err);
-                } else {
-                    resHelper.sendPage(res, 500, "500.html");
-                    emailService.sendErrorMailAsync(err, req);
+            else {
+                if (err.status && err.status === 404) resHelper.sendStaticPage(res, 404, "404.html");
+                else {
+                    if (global.isDev) resHelper.sendErrorPage(req, res, err);
+                    else resHelper.sendStaticPage(res, 500, "500.html");
                 }
             }
         }

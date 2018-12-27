@@ -1,6 +1,5 @@
 const reshelper = require('../lib/resultHelper');
 const repo = require("../repos/userRepo");
-var utils = require("../lib/utils");
 
 exports.checkUserExistsAsync = async function (req, res, next) {
     try {
@@ -61,7 +60,7 @@ exports.verifyEmailAsync = async function (req, res, next) {
 
 exports.getProfilePicAsync = async function (req, res, next) {
     try {
-        var user = utils.getUserFromToken(req);
+        var user = req.decoded.user;
         var id = user ? user.userId : -1;
         if (id === -1) {
             reshelper.sendOtherResult(res, 400, "Userid not provided.");
@@ -103,7 +102,7 @@ exports.saveAsync = async function (req, res, next) {
 
 exports.getAsync = async function (req, res, next) {
     try {
-        var user = utils.getUserFromToken(req);
+        var user = req.decoded.user;
         var id = user ? user.userId : -1;
         if (id === -1) {
             reshelper.sendOtherResult(res, 400, "Userid not provided.");
@@ -123,7 +122,7 @@ exports.getAsync = async function (req, res, next) {
 
 exports.changePasswordAsync = async function (req, res, next) {
     try {
-        var user = utils.getUserFromToken(req);
+        var user = req.decoded.user;
         var id = user ? user.userId : -1;
         var np = req.body.newpasswd;
         var op = req.body.oldpasswd;

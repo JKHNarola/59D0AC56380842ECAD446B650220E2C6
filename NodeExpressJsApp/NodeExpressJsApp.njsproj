@@ -7,7 +7,7 @@
     <RootNamespace>ExpressApp1</RootNamespace>
     <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
     <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
-    <Environment>env=dev
+    <Environment>env=prod
 tokentimespan=1h
 securitykey=CarnivalPreCarnivalSale_Carnival_Pre_CarnivalSale_Carnival_PreSale
 hosturl=http://localhost</Environment>

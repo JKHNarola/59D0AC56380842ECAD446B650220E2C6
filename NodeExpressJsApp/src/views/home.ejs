@@ -9,6 +9,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <button type="button" class="btn btn-primary ladda-button" ladda-button="loading" data-style="expand-left" ng-click="onClick()">Ladda Button</button>
+                    <button type="button" class="btn btn-primary" ng-click="showmessagebox()">Show messagebox</button>
                 </div>
             </div>
         </div>
@@ -16,7 +17,7 @@
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script>
-        app.controller('homeCtrl', function ($scope, $timeout, snackbar) {
+        app.controller('homeCtrl', function ($scope, $timeout, snackbar, messagebox) {
             $scope.loading = false;
             $scope.onInit = function () {
                 var loggedOut = getQueryParameterByName("loggedout");
@@ -31,7 +32,11 @@
                 $timeout(function () {
                     $scope.loading = false;
                 }, 5000);
-            }
+            };
+
+            $scope.showmessagebox = function () {
+                messagebox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request. Please try again or contact admin.");
+            };
         });
     </script>
 </body>

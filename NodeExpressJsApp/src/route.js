@@ -23,7 +23,7 @@ module.exports = function (app) {
         .get(pageCtrl.resetPasswordPage);
 
     app.route('/categories')
-        .get(catCtrl.index);
+        .get(pageCtrl.categoriesPage);
 
     app.route('/testerror')
         .get(function (req, res) {

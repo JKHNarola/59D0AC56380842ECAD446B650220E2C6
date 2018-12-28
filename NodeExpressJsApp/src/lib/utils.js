@@ -1,5 +1,4 @@
 var qs = require('querystring');
-var reqHelper = require('./reqHelper');
 var jwt = require('jsonwebtoken');
 var path = require('path');
 var fs = require('fs');
@@ -8,11 +7,26 @@ exports.encode = function (input) {
     return qs.escape(input);
 };
 
-exports.decodeToken = function (req) {
-    if (req.decoded)
-        return req.decoded;
+exports.getToken = function (req) {
+    var token = req.body.token || req.query.token || req.body.t || req.query.t || req.body.tok || req.query.tok;
+    if (!token) {
+        var authheader = req.headers['authorization'];
+        token = authheader ? authheader.replace('Bearer ', "") : null;
+    }
 
-    var token = reqHelper.extractToken(req);
+    return token;
+};
+
+//Hack
+exports.copyParam = function (req) {
+    req.orgParams = req.params;
+};
+
+exports.decodeToken = function (req) {
+    if (req.decodedToken)
+        return req.decodedToken;
+
+    var token = this.getToken(req);
     if (token) {
         var decoded = "";
         try {
@@ -27,7 +41,7 @@ exports.decodeToken = function (req) {
 };
 
 exports.extractUserFromRequest = function (req) {
-    var decoded = req.decoded ? req.decoded : this.decodeToken(req);
+    var decoded = req.decodedToken ? req.decodedToken : this.decodeToken(req);
     if (decoded) return decoded.user;
     return null;
 };

@@ -1,15 +1,11 @@
 var resHelper = require('../lib/resultHelper');
 var jwt = require('jsonwebtoken');
 var loginmanager = require('../lib/loginmanager');
-var reqHelper = require("../lib/reqHelper");
+var utils = require("../lib/utils");
 
 module.exports = function (req, res, next) {
-    var token = reqHelper.extractToken(req);
-
-    // decode token
+    var token = utils.getToken(req);
     if (token) {
-
-        // verifies secret and checks exp
         var decoded = "";
         try {
             decoded = jwt.verify(token, global.securityKey);
@@ -21,7 +17,8 @@ module.exports = function (req, res, next) {
             resHelper.sendOtherResult(res, 401, "You are not authorized to access. Access token is invalid or expired.");
             return;
         } else {
-            req.decoded = decoded;
+            req.token = token;
+            req.decodedToken = decoded;
             next();
         }
 

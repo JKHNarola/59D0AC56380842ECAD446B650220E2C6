@@ -87,7 +87,7 @@
     <% include ./partials/footer %>
     <% include ./partials/scripts %>
     <script>
-        app.controller('registerCtrl', function ($scope, $window, $timeout, $uibModal, apiService, messageBox) {
+        app.controller('registerCtrl', function ($scope, $window, $timeout, $uibModal, apiService, messagebox) {
             $scope.isSigningUp = false;
             $scope.user = {};
             $scope.onInit = function () {
@@ -128,7 +128,7 @@
                     console.log(res);
                     if (res && res.status === 1) {
                         $scope.onResetForm();
-                        messageBox.showSuccess("Sign up successful", "You are successfully signed up with us.", "We have sent you an email on your registered emailid for verifying your emailid. Please verify your emailid to activate your account.");
+                        messagebox.showSuccess("Sign up successful", "You are successfully signed up with us.", "We have sent you an email on your registered emailid for verifying your emailid. Please verify your emailid to activate your account.");
                     }
                 });
             };

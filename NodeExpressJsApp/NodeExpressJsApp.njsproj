@@ -44,7 +44,6 @@ hosturl=http://localhost</Environment>
     </Compile>
     <Compile Include="src\lib\loginmanager.js" />
     <Compile Include="src\lib\mailservice.js" />
-    <Compile Include="src\lib\reqHelper.js" />
     <Compile Include="src\lib\resultHelper.js" />
     <Compile Include="src\lib\utils.js" />
     <Compile Include="src\middlewares\authorizejwttoken.js" />

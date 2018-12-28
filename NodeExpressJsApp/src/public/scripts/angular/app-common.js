@@ -11,7 +11,7 @@ app.factory('appUtils', function () {
     return obj;
 });
 
-app.factory("login", function ($uibModal, localstorage, messageBox) {
+app.factory("login", function ($uibModal, localstorage, messagebox) {
     var obj = {};
     obj.open = function (redirectUrl) {
         var modalInstance = $uibModal.open({
@@ -44,7 +44,7 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
 
                 vm.onLogin = function () {
                     if (!vm.loginmodel.username || !vm.loginmodel.password) {
-                        messageBox.showWarning("Warning", "Please enter Username and Password.");
+                        messagebox.showWarning("Warning", "Please enter Username and Password.");
                         return;
                     }
                     vm.isLoggingIn = true;
@@ -67,7 +67,7 @@ app.factory("login", function ($uibModal, localstorage, messageBox) {
                                 });
                             }
                             else {
-                                messageBox.showWarning("Warning", "Invalid Username or Password.");
+                                messagebox.showWarning("Warning", "Invalid Username or Password.");
                             }
 
                             vm.isLoggingIn = false;
@@ -150,14 +150,14 @@ app.factory("localstorage", function ($window) {
     return obj;
 });
 
-app.factory("messageBox", function ($uibModal) {
+app.factory("messagebox", function ($uibModal) {
     var open = function (config) {
         var modalInstance = $uibModal.open({
             templateUrl: '/uitemplates/messagebox.tmpl.html',
             animation: true,
             keyboard: true,
             backdrop: 'static',
-            size: 'md',
+            size: config.size ? config.size : "md",
             controller: function ($scope, $uibModalInstance) {
                 var vm = $scope;
                 vm.title = config.title;
@@ -205,7 +205,7 @@ app.factory("messageBox", function ($uibModal) {
     };
 
     var obj = {};
-    obj.showInfo = function (title, message, submessage, callback) {
+    obj.showInfo = function (title, message, submessage, callback, size) {
         if (typeof callback === "undefined") callback = function () {
             return;
         };
@@ -220,7 +220,7 @@ app.factory("messageBox", function ($uibModal) {
         };
         open(config);
     };
-    obj.showSuccess = function (title, message, submessage, callback) {
+    obj.showSuccess = function (title, message, submessage, callback, size) {
         if (typeof callback === "undefined") callback = function () {
             return;
         };
@@ -235,7 +235,7 @@ app.factory("messageBox", function ($uibModal) {
         };
         open(config);
     };
-    obj.showError = function (title, message, submessage, callback) {
+    obj.showError = function (title, message, submessage, callback, size) {
         if (typeof callback === "undefined") callback = function () {
             return;
         };
@@ -246,11 +246,12 @@ app.factory("messageBox", function ($uibModal) {
             subText: submessage,
             icon: "error",
             isOk: true,
-            okCallback: callback
+            okCallback: callback,
+            size: size
         };
         open(config);
     };
-    obj.showWarning = function (title, message, submessage, callback) {
+    obj.showWarning = function (title, message, submessage, callback, size) {
         if (typeof callback === "undefined") callback = function () {
             return;
         };
@@ -261,11 +262,12 @@ app.factory("messageBox", function ($uibModal) {
             subText: submessage,
             icon: "warning",
             isOk: true,
-            okCallback: callback
+            okCallback: callback,
+            size: size
         };
         open(config);
     };
-    obj.showCustom = function (title, content, callback) {
+    obj.showCustom = function (title, content, callback, size) {
         if (typeof callback === "undefined") callback = function () {
             return;
         };
@@ -275,7 +277,8 @@ app.factory("messageBox", function ($uibModal) {
             isOk: true,
             okCallback: callback,
             isCustomContent: true,
-            content: content
+            content: content,
+            size: size
         };
         open(config);
     };
@@ -292,7 +295,8 @@ app.factory("messageBox", function ($uibModal) {
             isOk: true,
             isCancel: true,
             okCallback: okCallback,
-            cancelCallback: cancelCallback
+            cancelCallback: cancelCallback,
+            size: size
         };
         open(config);
     };
@@ -308,11 +312,12 @@ app.factory("messageBox", function ($uibModal) {
             isYes: true,
             isNo: true,
             yesCallback: yesCallback,
-            noCallback: noCallback
+            noCallback: noCallback,
+            size: size
         };
         open(config);
     };
-    obj.confirmCustom = function (title, content, okCallback, cancelCallback) {
+    obj.confirmCustom = function (title, content, okCallback, cancelCallback, size) {
         if (typeof okCallback === "undefined") throw new Error("okCallback not provided");
         if (typeof cancelCallback === "undefined") cancelCallback = function () { return; };
 
@@ -323,11 +328,12 @@ app.factory("messageBox", function ($uibModal) {
             isOk: true,
             isCancel: true,
             okCallback: okCallback,
-            cancelCallback: cancelCallback
+            cancelCallback: cancelCallback,
+            size: size
         };
         open(config);
     };
-    obj.confirmCustomYesNo = function (title, content, yesCallback, noCallback) {
+    obj.confirmCustomYesNo = function (title, content, yesCallback, noCallback, size) {
         if (typeof yesCallback === "undefined") throw new Error("yesCallback is not provided!!");
         if (typeof noCallback === "undefined") throw new Error("noCallback is not provided!!");
 
@@ -338,7 +344,8 @@ app.factory("messageBox", function ($uibModal) {
             isYes: true,
             isNo: true,
             yesCallback: yesCallback,
-            noCallback: noCallback
+            noCallback: noCallback,
+            size: size
         };
         open(config);
     };
@@ -480,7 +487,7 @@ app.factory("snackbar", function () {
 //#endregion factories
 
 //#region services
-app.service('apiService', function ($window, $http, $q, localstorage, messageBox, snackbar) {
+app.service('apiService', function ($window, $http, $q, localstorage, messagebox, snackbar) {
     var prepareAuthHeaders = function () {
         return {
             'Content-Type': 'application/json',
@@ -560,9 +567,9 @@ app.service('apiService', function ($window, $http, $q, localstorage, messageBox
                 break;
             case 500:
                 if (result && result.data && result.data.message)
-                    messageBox.showError("Error occured", result.data.message, result.data.data ? result.data.data.split("\n").join("<br />&nbsp;&nbsp;&nbsp;&nbsp;") : "");
+                    messagebox.showError("Error occured", result.data.message, result.data.data ? result.data.data.split("\n").join("<br />&nbsp;&nbsp;&nbsp;&nbsp;") : "", null, 'lg');
                 else
-                    messageBox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request. Please try again or contact admin.");
+                    messagebox.showError("Error occured", "Something went wrong!!", "Some error occured while processing your request. Please try again or contact admin.");
                 break;
             default:
                 return $q.reject(result);

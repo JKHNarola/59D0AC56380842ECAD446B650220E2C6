@@ -1,14 +1,6 @@
-var reqHelper = require("../lib/reqHelper");
+var utils = require("../lib/utils");
 const reshelper = require('../lib/resultHelper');
 const repo = require("../repos/categoryRepo");
-
-exports.index = function (req, res, next) {
-    try {
-        res.render("categories", { pageTitle: "App - Categories" });
-    } catch (e) {
-        next(e);
-    }
-};
 
 exports.listAsync = async function (req, res, next) {
     try {
@@ -21,7 +13,7 @@ exports.listAsync = async function (req, res, next) {
 
 exports.getAsync = async function (req, res, next) {
     try {
-        reqHelper.copyParam();
+        utils.copyParam();
 
         var id = req.params.id;
         if (!id) {

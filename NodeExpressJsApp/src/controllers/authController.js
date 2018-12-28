@@ -2,7 +2,7 @@ const reshelper = require('../lib/resultHelper');
 const repo = require("../repos/userRepo");
 var jwt = require('jsonwebtoken');
 var loginmanager = require('../lib/loginmanager');
-var reqHelper = require("../lib/reqHelper");
+var utils = require("../lib/utils");
 
 exports.authenticateAsync = async function (req, res, next) {
     try {
@@ -38,7 +38,7 @@ exports.authenticateAsync = async function (req, res, next) {
 
 exports.logout = function (req, res, next) {
     try {
-        var token = reqHelper.extractToken(req);
+        var token = utils.getToken(req);
 
         // decode token
         if (token) {

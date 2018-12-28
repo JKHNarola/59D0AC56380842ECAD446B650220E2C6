@@ -37,3 +37,11 @@ exports.resetPasswordPage = function (req, res, next) {
         next(e);
     }
 };
+
+exports.categoriesPage = function (req, res, next) {
+    try {
+        res.render("categories", { pageTitle: "App - Categories" });
+    } catch (e) {
+        next(e);
+    }
+};

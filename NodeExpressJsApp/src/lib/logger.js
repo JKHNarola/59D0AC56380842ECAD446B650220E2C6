@@ -1,8 +1,8 @@
 const sqlite = require('sqlite-async');
 const utils = require('./utils');
 var path = require('path');
-var db;
 var dbfile = path.join('src', 'logs.db');
+var db;
 
 exports.initAsync = async function () {
     try {
@@ -34,8 +34,8 @@ exports.logErrorAsync = async function (err, req) {
     try {
         var r = utils.getReqInfo(req);
         db = await sqlite.open(dbfile, sqlite.OPEN_READWRITE);
-        var p = [err ? err.message : "", err && err.stack ? err.stack.toString() : "", r.useragent ? r.useragent.browser : "", r.remoteIp, r.headers, r.reqPath, r.method, r.query, r.body, r.params, r.user ? r.user.userId : '', utils.toIsoString(new Date())];
         var st = await db.prepare("INSERT INTO Errors (Message, Stack, Browser, Ip, Header, Path, Method, Query, Body, Params, UserId, TimeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        var p = [err ? err.message : null, err && err.stack ? err.stack.toString() : null, r.useragent ? r.useragent.browser : null, r.remoteIp ? r.remoteIp : null, r.headers, r.reqPath, r.method, r.query, r.body, r.params, r.user ? r.user.userId : null, utils.toIsoString(new Date())];
         await st.run(p);
         await st.finalize();
         await db.close();

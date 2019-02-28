@@ -13,7 +13,7 @@
   "author": "Jigar Khanpara",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.18.7",
+    "nodemon": "^1.18.10",
     "pkg": "^4.3.5"
   },
   "dependencies": {
@@ -26,7 +26,7 @@
     "express-useragent": "^1.0.12",
     "jsonwebtoken": "^8.4.0",
     "morgan": "^1.9.1",
-    "mssql": "^4.3.0",
+    "mssql": "^4.3.2",
     "node-windows": "^0.1.14",
     "password-hash": "^1.2.2",
     "sendmail": "^1.4.1",

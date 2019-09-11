@@ -4,8 +4,8 @@ var app = angular.module('app', ['ngSanitize', 'ui.bootstrap', 'uiCropper', "lad
 app.factory('appUtils', function () {
     var obj = {};
 
-    obj.onChanges = function (changes, property) {
-        return changes[property] && changes[property].currentValue && changes[property].currentValue !== changes[property].previousValue;
+    obj.isChanged = function (changes, property) {
+        return changes[property] && changes[property].currentValue && changes[property].currentValue !== changes[property].previousValue ? true : false;
     };
 
     return obj;
@@ -215,6 +215,7 @@ app.factory("messagebox", function ($uibModal) {
             text: message,
             subText: submessage,
             icon: "info",
+            size: size,
             isOk: true,
             okCallback: callback
         };
@@ -230,6 +231,7 @@ app.factory("messagebox", function ($uibModal) {
             text: message,
             subText: submessage,
             icon: "success",
+            size: size,
             isOk: true,
             okCallback: callback
         };
@@ -245,9 +247,9 @@ app.factory("messagebox", function ($uibModal) {
             text: message,
             subText: submessage,
             icon: "error",
+            size: size,
             isOk: true,
-            okCallback: callback,
-            size: size
+            okCallback: callback
         };
         open(config);
     };
@@ -261,9 +263,9 @@ app.factory("messagebox", function ($uibModal) {
             text: message,
             subText: submessage,
             icon: "warning",
+            size: size,
             isOk: true,
-            okCallback: callback,
-            size: size
+            okCallback: callback
         };
         open(config);
     };
@@ -283,7 +285,7 @@ app.factory("messagebox", function ($uibModal) {
         open(config);
     };
 
-    obj.confirm = function (title, message, submessage, okCallback, cancelCallback) {
+    obj.confirm = function (title, message, submessage, okCallback, cancelCallback, size) {
         if (typeof okCallback === "undefined") throw new Error("okCallback not provided");
         if (typeof cancelCallback === "undefined") cancelCallback = function () { return; };
 
@@ -300,7 +302,7 @@ app.factory("messagebox", function ($uibModal) {
         };
         open(config);
     };
-    obj.confirmYesNo = function (title, message, submessage, yesCallback, noCallback) {
+    obj.confirmYesNo = function (title, message, submessage, yesCallback, noCallback, size) {
         if (typeof yesCallback === "undefined") throw new Error("yesCallback is not provided!!");
         if (typeof noCallback === "undefined") throw new Error("noCallback is not provided!!");
 
@@ -355,10 +357,10 @@ app.factory("messagebox", function ($uibModal) {
 
 app.factory("snackbar", function () {
     var show = function (config) {
-        var maindiv = '<div id="snbarea" class="col-sm-6 notification-area"></div> ';
+        var maindiv = '<div id="snbarea" class="notification-area"></div> ';
         if (!document.getElementById("snbarea")) {
             var wrapper = document.createElement('div');
-            wrapper.classList = ['row'];
+            //wrapper.classList = ['row'];
             wrapper.innerHTML = maindiv;
             document.body.appendChild(wrapper);
         }
@@ -374,12 +376,18 @@ app.factory("snackbar", function () {
                 i = "zmdi-info text-info";
                 break;
             case "e":
-            case "error":
             case "err":
+            case "error":
+            case "f":
+            case "fail":
+            case "failure":
+            case "false":
                 i = "zmdi-close-circle text-danger";
                 break;
             case "s":
             case "success":
+            case "t":
+            case "true":
                 i = "zmdi-check-circle text-success";
                 break;
             case "w":
@@ -392,7 +400,7 @@ app.factory("snackbar", function () {
                 break;
         }
 
-        var snb = '<table class="notification" cellspacing="10"><tr><td style="width:50px;"><i style="font-size: 40px;" class="zmdi ' + i + ' " aria-hidden="true"></i> </td> <td> <span class="message">' + config.message + '</span> </td>';
+        var snb = '<table class="notification" cellspacing="10"><tr><td class="snb-icon"><i style="font-size: 40px;" class="zmdi ' + i + ' " aria-hidden="true"></i></td><td class="snb-txt"><span class="message">' + config.message + '</span></td>';
         if (config.isRetry && config.retryCallback)
             snb += '<td align="right" width="0"><div id="' + snbid + 'retry" class="btn btn-lnk text-warning"><strong>RETRY</strong></div></td>';
         if (config.isClose)

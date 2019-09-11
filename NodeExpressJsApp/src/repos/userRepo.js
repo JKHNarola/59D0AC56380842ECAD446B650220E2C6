@@ -91,7 +91,8 @@ exports.registerAsync = async function (email, password, username, fullname, pro
                 expiration: expd,
                 key: sstamp
             };
-            var url = global.appconfig.hosturl + ":" + global.appconfig.port + "/verifyemail?code=" + utils.encode(crypto.encrypt(JSON.stringify(obj)).toString()) + "&email=" + utils.encode(email);
+
+            var url = global.appconfig.hosturl + "/verifyemail?code=" + utils.encode(crypto.encrypt(JSON.stringify(obj)).toString()) + "&email=" + utils.encode(email);
             var str = "<html><body><a href='" + url + "'>Verify Email</a></body></html>";
             var file = path.join(__dirname, "..", "views", "templates", "verifyemail.html");
             if (fs.existsSync(file)) {
@@ -243,7 +244,7 @@ exports.requestForgotPassword = async function (email) {
             expiration: expd,
             key: res[0].securityStamp
         };
-        var url = global.appconfig.hosturl + ":" + global.appconfig.port + "/resetpassword?code=" + utils.encode(crypto.encrypt(JSON.stringify(obj)).toString()) + "&email=" + utils.encode(email);
+        var url = global.appconfig.hosturl + "/resetpassword?code=" + utils.encode(crypto.encrypt(JSON.stringify(obj)).toString()) + "&email=" + utils.encode(email);
         var str = "<html><body><a href='" + url + "'>Reset Your Password</a></body></html>";
         var file = path.join(__dirname, "..", "views", "templates", "resetpasswd.html");
         if (fs.existsSync(file)) {

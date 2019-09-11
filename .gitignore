@@ -73,3 +73,5 @@ NodeExpressJsApp/src/logs.db
 NodeExpressJsApp/logs.txt
 NodeExpressJsApp/src/logs.txt
 .vs
+/NodeExpressJsApp/src/iisnode
+/NodeExpressJsApp/src/iisnode

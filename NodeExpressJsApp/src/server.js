@@ -25,7 +25,7 @@ try {
 
     if (!global.appconfig) global.appconfig = {};
     if (!global.appconfig.env) global.appconfig.env = process.env.env ? process.env.env.toString() : "prod";
-    if (!global.appconfig.port) global.appconfig.port = process.env.PORT || 3500;
+    if (!global.appconfig.port) global.appconfig.port = process.env.PORT || 3334;
     if (!global.appconfig.dbconfig) global.appconfig.dbconfig = process.env.dbconfig ? JSON.parse(process.env.dbconfig.toString()) : null;
     if (!global.appconfig.emailconfig) global.appconfig.emailconfig = process.env.emailconfig ? JSON.parse(process.env.emailconfig.toString()) : null;
     if (!global.appconfig.tokentimespan) global.appconfig.tokentimespan = process.env.tokentimespan ? process.env.tokentimespan.toString() : "1h";
@@ -33,6 +33,8 @@ try {
     global.securityKey = process.env.securitykey || null;
 
     global.isDev = global.appconfig.env === "dev";
+
+    console.log(global.appconfig);
 
     if (!global.appconfig.env ||
         !global.appconfig.port ||
@@ -42,7 +44,9 @@ try {
         !global.appconfig.hosturl ||
         !global.securityKey
     ) {
-        throw new Error("Missing required application configurations!!");
+        logger.logInfoAsync("Missing required application configurations!!", global.appconfig).then(function () {
+            throw new Error("Missing required application configurations!!");
+        });
     }
 
     console.log("");
@@ -125,6 +129,6 @@ try {
         console.log(chalk.redBright(err));
         var txt = new Date().toString() + "\r\n" + err.stack.toString() + "\r\n\r\n";
         fs.appendFileSync("logs.txt", txt);
-        emailService.sendErrorMailAsync("jigu.khanpara@gmail.email", "App server init error", err.stack, true);
+        emailService.sendErrorMailAsync("jigu.khanpara@gmail.com", "App server init error", err.stack, true);
     }
 }

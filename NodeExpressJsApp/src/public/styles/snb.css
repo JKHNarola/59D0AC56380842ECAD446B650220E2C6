@@ -2,14 +2,13 @@
     position: fixed;
     bottom: 25px;
     left: 10px;
-    z-index: 100000
+    z-index: 100000;
+    max-width: 600px;
 }
 
 .notification {
-    /*min-width: 400px;
-    max-width: 600px;*/
+    max-height: 600px;
     margin: 5px 0;
-    padding: 10px 20px;
     background-color: #212529;
     border-radius: .4rem;
     color: #fff;
@@ -17,8 +16,13 @@
     box-shadow: 0 .46875rem 2.1875rem rgba(90,97,105,.1),0 .9375rem 1.40625rem rgba(90,97,105,.1),0 .25rem .53125rem rgba(90,97,105,.12),0 .125rem .1875rem rgba(90,97,105,.1);
 }
 
-    .notification td {
-        padding: 10px
+    .notification .snb-icon {
+        width: 50px;
+        padding: 10px;
+    }
+
+    .notification .snb-txt {
+        padding: 10px 15px 10px 0px;
     }
 
     .notification .btn {

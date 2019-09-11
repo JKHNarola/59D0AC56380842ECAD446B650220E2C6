@@ -8,7 +8,7 @@
         <div class="page-area">
             <div class="row">
                 <div class="col-lg-12">
-                    <button type="button" class="btn btn-primary ladda-button" ladda-button="loading" data-style="expand-left" ng-click="onClick()">Ladda Button</button>
+                    <!--<button type="button" class="btn btn-primary ladda-button" ladda-button="loading" data-style="expand-left" ng-click="onClick()">Ladda Button</button>-->
                     <button type="button" class="btn btn-primary" ng-click="showmessagebox()">Show messagebox</button>
                 </div>
             </div>
@@ -35,7 +35,15 @@
             };
 
             $scope.showmessagebox = function () {
-                messagebox.showSuccess("Added", "Successfully added!!");
+                messagebox.confirm("Confirm", "Are you sure you want to perform action?", "Warning: After performing action you will not be able to undo it.", $scope.onOk, $scope.onCancel);
+            };
+
+            $scope.onOk = function () {
+                snackbar.showSuccess("You clicked OK!!", 5000);
+            };
+
+            $scope.onCancel = function () {
+                snackbar.showWarning("You clicked Cancel!!", 5000);
             };
         });
     </script>

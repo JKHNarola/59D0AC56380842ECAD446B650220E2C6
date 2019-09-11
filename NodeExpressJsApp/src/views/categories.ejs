@@ -38,11 +38,11 @@
                 apiService.get("/api/categories").promise
                     .then(function (r) {
                         if (r.status === 1) {
-                            r.data.forEach(function (x) {
+                            $scope.data = r.data.map(function (x) {
                                 if (x.picture) x.picture = arrayBufferToBase64Image(x.picture.data);
                                 else x.picture = '/images/no-image-available.png';
+                                return x;
                             });
-                            $scope.data = r.data;
                         }
                     })
                     .catch(function (e) {
